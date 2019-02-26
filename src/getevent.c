@@ -56,13 +56,14 @@ int getevent_encode_apdu(
         apdu[2] = invoke_id;
         apdu[3] = SERVICE_CONFIRMED_GET_EVENT_INFORMATION;
         apdu_len = 4;
+
         /* encode optional parameter */
         if (lastReceivedObjectIdentifier)
         {
-            len =
-                encode_context_object_id(&apdu[apdu_len], 0,
-                                         (int) lastReceivedObjectIdentifier->type,
-                                         lastReceivedObjectIdentifier->instance);
+            len = encode_context_object_id(&apdu[apdu_len], 
+										   0,
+										   (int) lastReceivedObjectIdentifier->type,
+										   lastReceivedObjectIdentifier->instance);
             apdu_len += len;
         }
     }
@@ -84,10 +85,12 @@ int getevent_decode_service_request(
     {
         /* Tag 0: Object ID - optional */
         if (!decode_is_context_tag(&apdu[len++], 0))
+		{
             return -1;
-        len +=
-            decode_object_id(&apdu[len], &lastReceivedObjectIdentifier->type,
-                             &lastReceivedObjectIdentifier->instance);
+		}
+        len += decode_object_id(&apdu[len], 
+								&lastReceivedObjectIdentifier->type,
+								&lastReceivedObjectIdentifier->instance);
     }
 
     return (int) len;
@@ -103,10 +106,11 @@ int getevent_ack_encode_apdu_init(
 
     if (apdu && (max_apdu >= 4))
     {
-        apdu[0] = PDU_TYPE_COMPLEX_ACK; /* complex ACK service */
-        apdu[1] = invoke_id;    /* original invoke id from request */
-        apdu[2] = SERVICE_CONFIRMED_GET_EVENT_INFORMATION;
-        apdu_len = 3;
+        apdu[0]		= PDU_TYPE_COMPLEX_ACK;						/* complex ACK service */
+        apdu[1]		= invoke_id;								/* original invoke id from request */
+        apdu[2]		= SERVICE_CONFIRMED_GET_EVENT_INFORMATION;
+        apdu_len	= 3;
+
         /* service ack follows */
         /* Tag 0: listOfEventSummaries */
         apdu_len += encode_opening_tag(&apdu[apdu_len], 0);
@@ -121,9 +125,9 @@ int getevent_ack_encode_apdu_data(
     BACNET_GET_EVENT_INFORMATION_DATA * get_event_data
 )
 {
-    int apdu_len = 0;   /* total length of the apdu, return value */
+    unsigned i		= 0;   /* counter */
+    int apdu_len	= 0;   /* total length of the apdu, return value */
     BACNET_GET_EVENT_INFORMATION_DATA *event_data;
-    unsigned i = 0;     /* counter */
 
     /* unused parameter */
     max_apdu = max_apdu;
@@ -133,42 +137,46 @@ int getevent_ack_encode_apdu_data(
         while (event_data)
         {
             /* Tag 0: objectIdentifier */
-            apdu_len +=
-                encode_context_object_id(&apdu[apdu_len], 0,
-                                         (int) event_data->objectIdentifier.type,
-                                         event_data->objectIdentifier.instance);
+            apdu_len += encode_context_object_id(&apdu[apdu_len], 
+												 0, 
+												 (int) event_data->objectIdentifier.type, 
+												 event_data->objectIdentifier.instance);
+
             /* Tag 1: eventState */
-            apdu_len +=
-                encode_context_enumerated(&apdu[apdu_len], 1,
-                                          event_data->eventState);
+            apdu_len += encode_context_enumerated(&apdu[apdu_len], 
+												  1, 
+												  event_data->eventState);
+
             /* Tag 2: acknowledgedTransitions */
-            apdu_len +=
-                encode_context_bitstring(&apdu[apdu_len], 2,
-                                         &event_data->acknowledgedTransitions);
+            apdu_len += encode_context_bitstring(&apdu[apdu_len], 
+												 2, 
+												 &event_data->acknowledgedTransitions);
+
             /* Tag 3: eventTimeStamps */
             apdu_len += encode_opening_tag(&apdu[apdu_len], 3);
             for (i = 0; i < 3; i++)
             {
-                apdu_len +=
-                    bacapp_encode_timestamp(&apdu[apdu_len],
-                                            &event_data->eventTimeStamps[i]);
+                apdu_len += bacapp_encode_timestamp(&apdu[apdu_len],
+													&event_data->eventTimeStamps[i]);
             }
             apdu_len += encode_closing_tag(&apdu[apdu_len], 3);
+
             /* Tag 4: notifyType */
-            apdu_len +=
-                encode_context_enumerated(&apdu[apdu_len], 4,
-                                          event_data->notifyType);
+            apdu_len += encode_context_enumerated(&apdu[apdu_len], 
+												  4, 
+												  event_data->notifyType);
+
             /* Tag 5: eventEnable */
-            apdu_len +=
-                encode_context_bitstring(&apdu[apdu_len], 5,
-                                         &event_data->eventEnable);
+            apdu_len += encode_context_bitstring(&apdu[apdu_len], 
+												 5, 
+												 &event_data->eventEnable);
+
             /* Tag 6: eventPriorities */
             apdu_len += encode_opening_tag(&apdu[apdu_len], 6);
             for (i = 0; i < 3; i++)
             {
-                apdu_len +=
-                    encode_application_unsigned(&apdu[apdu_len],
-                                                event_data->eventPriorities[i]);
+                apdu_len += encode_application_unsigned(&apdu[apdu_len],
+														event_data->eventPriorities[i]);
             }
             apdu_len += encode_closing_tag(&apdu[apdu_len], 6);
             event_data = event_data->next;

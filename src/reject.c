@@ -127,9 +127,13 @@ int reject_decode_service_request(
     if (apdu_len)
     {
         if (invoke_id)
+		{
             *invoke_id = apdu[0];
+		}
         if (reject_reason)
+		{
             *reject_reason = apdu[1];
+		}
     }
 
     return len;
@@ -152,17 +156,23 @@ int reject_decode_apdu(
     int len = 0;
 
     if (!apdu)
+	{
         return -1;
+	}
+
     /* optional checking - most likely was already done prior to this call */
     if (apdu_len)
     {
         if (apdu[0] != PDU_TYPE_REJECT)
+		{
             return -1;
+		}
         if (apdu_len > 1)
         {
-            len =
-                reject_decode_service_request(&apdu[1], apdu_len - 1,
-                                              invoke_id, reject_reason);
+            len = reject_decode_service_request(&apdu[1], 
+												apdu_len - 1,
+												invoke_id, 
+												reject_reason);
         }
     }
 
@@ -181,47 +191,64 @@ void testReject(
     uint8_t test_invoke_id = 0;
     uint8_t test_reject_reason = 0;
 
-    len = reject_encode_apdu(&apdu[0], invoke_id, reject_reason);
+    len = reject_encode_apdu(&apdu[0], 
+							 invoke_id, 
+							 reject_reason);
+
     ct_test(pTest, len != 0);
     apdu_len = len;
 
-    len =
-        reject_decode_apdu(&apdu[0], apdu_len, &test_invoke_id,
-                           &test_reject_reason);
+    len = reject_decode_apdu(&apdu[0], 
+							 apdu_len, 
+							 &test_invoke_id,
+							 &test_reject_reason);
+
     ct_test(pTest, len != -1);
     ct_test(pTest, test_invoke_id == invoke_id);
     ct_test(pTest, test_reject_reason == reject_reason);
 
     /* change type to get negative response */
     apdu[0] = PDU_TYPE_ABORT;
-    len =
-        reject_decode_apdu(&apdu[0], apdu_len, &test_invoke_id,
-                           &test_reject_reason);
+
+    len = reject_decode_apdu(&apdu[0], 
+							 apdu_len, 
+							 &test_invoke_id,
+							 &test_reject_reason);
+
     ct_test(pTest, len == -1);
 
     /* test NULL APDU */
-    len =
-        reject_decode_apdu(NULL, apdu_len, &test_invoke_id,
-                           &test_reject_reason);
+    len = reject_decode_apdu(NULL, 
+							 apdu_len, 
+							 &test_invoke_id,
+							 &test_reject_reason);
+
     ct_test(pTest, len == -1);
 
     /* force a zero length */
-    len =
-        reject_decode_apdu(&apdu[0], 0, &test_invoke_id, &test_reject_reason);
-    ct_test(pTest, len == 0);
+    len = reject_decode_apdu(&apdu[0], 
+							 0, 
+							 &test_invoke_id, 
+							 &test_reject_reason);
 
+    ct_test(pTest, len == 0);
 
     /* check them all...   */
     for (invoke_id = 0; invoke_id < 255; invoke_id++)
     {
         for (reject_reason = 0; reject_reason < 255; reject_reason++)
         {
-            len = reject_encode_apdu(&apdu[0], invoke_id, reject_reason);
+            len = reject_encode_apdu(&apdu[0], 
+									 invoke_id, 
+									 reject_reason);
             apdu_len = len;
             ct_test(pTest, len != 0);
-            len =
-                reject_decode_apdu(&apdu[0], apdu_len, &test_invoke_id,
-                                   &test_reject_reason);
+
+            len = reject_decode_apdu(&apdu[0], 
+									 apdu_len, 
+									 &test_invoke_id,
+									 &test_reject_reason);
+
             ct_test(pTest, len != -1);
             ct_test(pTest, test_invoke_id == invoke_id);
             ct_test(pTest, test_reject_reason == reject_reason);

@@ -53,26 +53,34 @@ int lso_encode_apdu(
         apdu[2] = invoke_id;
         apdu[3] = SERVICE_CONFIRMED_LIFE_SAFETY_OPERATION;
         apdu_len = 4;
+
         /* tag 0 - requestingProcessId */
-        len = encode_context_unsigned(&apdu[apdu_len], 0, data->processId);
+        len = encode_context_unsigned(&apdu[apdu_len], 
+									  0, 
+									  data->processId);
         apdu_len += len;
+
         /* tag 1 - requestingSource */
-        len =
-            encode_context_character_string(&apdu[apdu_len], 1,
-                                            &data->requestingSrc);
+        len = encode_context_character_string(&apdu[apdu_len], 
+											  1, 
+											  &data->requestingSrc);
         apdu_len += len;
+
         /*
            Operation
          */
-        len = encode_context_enumerated(&apdu[apdu_len], 2, data->operation);
+        len = encode_context_enumerated(&apdu[apdu_len], 
+										2, 
+										data->operation);
         apdu_len += len;
+
         /*
            Object ID
          */
-
-        len =
-            encode_context_object_id(&apdu[apdu_len], 3,
-                                     (int) data->targetObject.type, data->targetObject.instance);
+        len = encode_context_object_id(&apdu[apdu_len], 
+									   3,
+									   (int) data->targetObject.type, 
+									   data->targetObject.instance);
 
         apdu_len += len;
     }
@@ -81,22 +89,23 @@ int lso_encode_apdu(
 }
 
 int lso_decode_service_request(
-    uint8_t * apdu,
-    unsigned apdu_len,
-    BACNET_LSO_DATA * data
+    uint8_t *			apdu,
+    unsigned			apdu_len,
+    BACNET_LSO_DATA *	data
 )
 {
-    int len = 0;        /* return value */
-    int section_length = 0;     /* length returned from decoding */
-    uint32_t operation = 0;     /* handles decoded value */
+    int len				= 0;     /* return value */
+    int section_length	= 0;     /* length returned from decoding */
+    uint32_t operation	= 0;     /* handles decoded value */
 
     /* check for value pointers */
     if (apdu_len && data)
     {
-        /* Tag 0: Object ID          */
+        /* Tag 0: Object ID */
 
         if ((section_length =
-                    decode_context_unsigned(&apdu[len], 0,
+                    decode_context_unsigned(&apdu[len], 
+											0,
                                             &data->processId)) == -1)
         {
             return -1;
@@ -104,15 +113,18 @@ int lso_decode_service_request(
         len += section_length;
 
         if ((section_length =
-                    decode_context_character_string(&apdu[len], 1,
-                            &data->requestingSrc)) == -1)
+                    decode_context_character_string(&apdu[len], 
+													1,
+													&data->requestingSrc)) == -1)
         {
             return -1;
         }
         len += section_length;
 
         if ((section_length =
-                    decode_context_enumerated(&apdu[len], 2, &operation)) == -1)
+                    decode_context_enumerated(&apdu[len], 
+											  2, 
+											  &operation)) == -1)
         {
             return -1;
         }
@@ -125,7 +137,8 @@ int lso_decode_service_request(
         if (decode_is_context_tag(&apdu[len], 3))
         {
             if ((section_length =
-                        decode_context_object_id(&apdu[len], 3,
+                        decode_context_object_id(&apdu[len], 
+												 3,
                                                  &data->targetObject.type,
                                                  &data->targetObject.instance)) == -1)
             {

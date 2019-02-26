@@ -72,8 +72,8 @@ int encode_unsigned24(
 )
 {
     apdu[0] = (uint8_t) ((value & 0xff0000) >> 16);
-    apdu[1] = (uint8_t) ((value & 0x00ff00) >> 8);
-    apdu[2] = (uint8_t) (value & 0x0000ff);
+    apdu[1] = (uint8_t) ((value & 0x00ff00) >>  8);
+    apdu[2] = (uint8_t) ((value & 0x0000ff) >>  0);
 
     return 3;
 }
@@ -85,9 +85,9 @@ int decode_unsigned24(
 {
     if (value)
     {
-        *value = ((uint32_t) ((((uint32_t) apdu[0]) << 16) & 0x00ff0000));
-        *value |= (uint32_t) ((((uint32_t) apdu[1]) << 8) & 0x0000ff00);
-        *value |= ((uint32_t) (((uint32_t) apdu[2]) & 0x000000ff));
+        *value  = ((uint32_t) ((((uint32_t) apdu[0]) << 16) & 0x00ff0000));
+        *value |= ((uint32_t) ((((uint32_t) apdu[1]) <<  8) & 0x0000ff00));
+        *value |= ((uint32_t) ((((uint32_t) apdu[2]) <<  0) & 0x000000ff));
     }
 
     return 3;
@@ -100,8 +100,8 @@ int encode_unsigned32(
 {
     apdu[0] = (uint8_t) ((value & 0xff000000) >> 24);
     apdu[1] = (uint8_t) ((value & 0x00ff0000) >> 16);
-    apdu[2] = (uint8_t) ((value & 0x0000ff00) >> 8);
-    apdu[3] = (uint8_t) (value & 0x000000ff);
+    apdu[2] = (uint8_t) ((value & 0x0000ff00) >>  8);
+    apdu[3] = (uint8_t) ((value & 0x000000ff) >>  0);
 
     return 4;
 }
@@ -113,10 +113,10 @@ int decode_unsigned32(
 {
     if (value)
     {
-        *value = ((uint32_t) ((((uint32_t) apdu[0]) << 24) & 0xff000000));
+        *value  = ((uint32_t) ((((uint32_t) apdu[0]) << 24) & 0xff000000));
         *value |= ((uint32_t) ((((uint32_t) apdu[1]) << 16) & 0x00ff0000));
-        *value |= ((uint32_t) ((((uint32_t) apdu[2]) << 8) & 0x0000ff00));
-        *value |= ((uint32_t) (((uint32_t) apdu[3]) & 0x000000ff));
+        *value |= ((uint32_t) ((((uint32_t) apdu[2]) <<  8) & 0x0000ff00));
+        *value |= ((uint32_t) ((((uint32_t) apdu[3]) <<  0) & 0x000000ff));
     }
 
     return 4;
@@ -175,7 +175,7 @@ int decode_signed16(
         else
             *value = 0;
         *value |= ((int32_t) ((((int32_t) apdu[0]) << 8) & 0x0000ff00));
-        *value |= ((int32_t) (((int32_t) apdu[1]) & 0x000000ff));
+        *value |= ((int32_t) ((((int32_t) apdu[1]) << 0) & 0x000000ff));
     }
 
     return 2;
@@ -206,8 +206,8 @@ int decode_signed24(
         else
             *value = 0;
         *value |= ((int32_t) ((((int32_t) apdu[0]) << 16) & 0x00ff0000));
-        *value |= ((int32_t) ((((int32_t) apdu[1]) << 8) & 0x0000ff00));
-        *value |= ((int32_t) (((int32_t) apdu[2]) & 0x000000ff));
+        *value |= ((int32_t) ((((int32_t) apdu[1]) <<  8) & 0x0000ff00));
+        *value |= ((int32_t) ((((int32_t) apdu[2]) <<  0) & 0x000000ff));
     }
 
     return 3;
@@ -220,8 +220,8 @@ int encode_signed32(
 {
     apdu[0] = (uint8_t) ((value & 0xff000000) >> 24);
     apdu[1] = (uint8_t) ((value & 0x00ff0000) >> 16);
-    apdu[2] = (uint8_t) ((value & 0x0000ff00) >> 8);
-    apdu[3] = (uint8_t) (value & 0x000000ff);
+    apdu[2] = (uint8_t) ((value & 0x0000ff00) >>  8);
+    apdu[3] = (uint8_t) ((value & 0x000000ff) >>  0);
 
     return 4;
 }
@@ -233,10 +233,10 @@ int decode_signed32(
 {
     if (value)
     {
-        *value = ((int32_t) ((((int32_t) apdu[0]) << 24) & 0xff000000));
+        *value  = ((int32_t) ((((int32_t) apdu[0]) << 24) & 0xff000000));
         *value |= ((int32_t) ((((int32_t) apdu[1]) << 16) & 0x00ff0000));
-        *value |= ((int32_t) ((((int32_t) apdu[2]) << 8) & 0x0000ff00));
-        *value |= ((int32_t) (((int32_t) apdu[3]) & 0x000000ff));
+        *value |= ((int32_t) ((((int32_t) apdu[2]) <<  8) & 0x0000ff00));
+        *value |= ((int32_t) ((((int32_t) apdu[3]) <<  0) & 0x000000ff));
     }
 
     return 4;

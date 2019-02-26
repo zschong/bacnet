@@ -81,35 +81,35 @@ int alarm_ack_encode_service_request(
 
     if (apdu)
     {
-        len =
-            encode_context_unsigned(&apdu[apdu_len], 0,
-                                    data->ackProcessIdentifier);
+        len = encode_context_unsigned(&apdu[apdu_len], 
+									  0,
+									  data->ackProcessIdentifier);
         apdu_len += len;
 
-        len =
-            encode_context_object_id(&apdu[apdu_len], 1,
-                                     (int) data->eventObjectIdentifier.type,
-                                     data->eventObjectIdentifier.instance);
+        len = encode_context_object_id(&apdu[apdu_len], 
+									   1,
+									   (int) data->eventObjectIdentifier.type,
+									   data->eventObjectIdentifier.instance);
         apdu_len += len;
 
-        len =
-            encode_context_enumerated(&apdu[apdu_len], 2,
-                                      data->eventStateAcked);
+        len = encode_context_enumerated(&apdu[apdu_len], 
+										2,
+										data->eventStateAcked);
         apdu_len += len;
 
-        len =
-            bacapp_encode_context_timestamp(&apdu[apdu_len], 3,
-                                            &data->eventTimeStamp);
+        len = bacapp_encode_context_timestamp(&apdu[apdu_len], 
+											  3,
+											  &data->eventTimeStamp);
         apdu_len += len;
 
-        len =
-            encode_context_character_string(&apdu[apdu_len], 4,
-                                            &data->ackSource);
+        len = encode_context_character_string(&apdu[apdu_len], 
+											  4,
+											  &data->ackSource);
         apdu_len += len;
 
-        len =
-            bacapp_encode_context_timestamp(&apdu[apdu_len], 5,
-                                            &data->ackTimeStamp);
+        len = bacapp_encode_context_timestamp(&apdu[apdu_len], 
+											  5,
+											  &data->ackTimeStamp);
         apdu_len += len;
     }
 
@@ -135,50 +135,49 @@ int alarm_ack_decode_service_request(
     /* unused parameter */
     apdu_len = apdu_len;
 
-    if (-1 == (section_len =
-                   decode_context_unsigned(&apdu[len], 0,
-                                           &data->ackProcessIdentifier)))
+    if (-1 == (section_len = decode_context_unsigned(&apdu[len], 
+													 0,
+													 &data->ackProcessIdentifier)))
     {
         return -1;
     }
     len += section_len;
 
-    if (-1 == (section_len =
-                   decode_context_object_id(&apdu[len], 1,
-                                            &data->eventObjectIdentifier.type,
-                                            &data->eventObjectIdentifier.instance)))
+    if (-1 == (section_len = decode_context_object_id(&apdu[len], 
+													  1,
+													  &data->eventObjectIdentifier.type,
+													  &data->eventObjectIdentifier.instance)))
     {
         return -1;
     }
     len += section_len;
 
-    if (-1 == (section_len =
-                   decode_context_enumerated(&apdu[len], 2, &enumValue)))
+    if (-1 == (section_len = decode_context_enumerated(&apdu[len], 2, &enumValue)))
     {
         return -1;
     }
     data->eventStateAcked = (BACNET_EVENT_STATE) enumValue;
     len += section_len;
 
-    if (-1 == (section_len =
-                   bacapp_decode_context_timestamp(&apdu[len], 3,
-                           &data->eventTimeStamp)))
+    if (-1 == (section_len = bacapp_decode_context_timestamp(&apdu[len], 
+															 3,
+															 &data->eventTimeStamp)))
     {
         return -1;
     }
     len += section_len;
 
-    if (-1 == (section_len =
-                   decode_context_character_string(&apdu[len], 4,
-                           &data->ackSource)))
+    if (-1 == (section_len = decode_context_character_string(&apdu[len], 
+															 4,
+															 &data->ackSource)))
     {
         return -1;
     }
     len += section_len;
 
-    if (-1 == (section_len =
-                   bacapp_decode_context_timestamp(&apdu[len], 5,
-                           &data->ackTimeStamp)))
+    if (-1 == (section_len = bacapp_decode_context_timestamp(&apdu[len], 
+															 5,
+															 &data->ackTimeStamp)))
     {
         return -1;
     }
@@ -205,18 +204,19 @@ void testAlarmAck(
     int inLen;
     int outLen;
 
-    testAlarmAckIn.ackProcessIdentifier = 0x1234;
     characterstring_init_ansi(&testAlarmAckIn.ackSource, "This is a test");
-    testAlarmAckIn.ackTimeStamp.tag = TIME_STAMP_SEQUENCE;
-    testAlarmAckIn.ackTimeStamp.value.sequenceNum = 0x4331;
-    testAlarmAckIn.eventObjectIdentifier.instance = 567;
-    testAlarmAckIn.eventObjectIdentifier.type = OBJECT_DEVICE;
-    testAlarmAckIn.eventTimeStamp.tag = TIME_STAMP_TIME;
-    testAlarmAckIn.eventTimeStamp.value.time.hour = 10;
-    testAlarmAckIn.eventTimeStamp.value.time.min = 11;
-    testAlarmAckIn.eventTimeStamp.value.time.sec = 12;
+
+    testAlarmAckIn.ackProcessIdentifier					= 0x1234;
+    testAlarmAckIn.ackTimeStamp.tag						= TIME_STAMP_SEQUENCE;
+    testAlarmAckIn.ackTimeStamp.value.sequenceNum		= 0x4331;
+    testAlarmAckIn.eventObjectIdentifier.instance		= 567;
+    testAlarmAckIn.eventObjectIdentifier.type			= OBJECT_DEVICE;
+    testAlarmAckIn.eventTimeStamp.tag					= TIME_STAMP_TIME;
+    testAlarmAckIn.eventTimeStamp.value.time.hour		= 10;
+    testAlarmAckIn.eventTimeStamp.value.time.min		= 11;
+    testAlarmAckIn.eventTimeStamp.value.time.sec		= 12;
     testAlarmAckIn.eventTimeStamp.value.time.hundredths = 14;
-    testAlarmAckIn.eventStateAcked = EVENT_STATE_OFFNORMAL;
+    testAlarmAckIn.eventStateAcked						= EVENT_STATE_OFFNORMAL;
 
     memset(&testAlarmAckOut, 0, sizeof(testAlarmAckOut));
 

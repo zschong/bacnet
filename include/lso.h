@@ -38,23 +38,23 @@ extern "C" {
 
 typedef struct
 {
-    uint32_t processId;
-    BACNET_CHARACTER_STRING requestingSrc;
-    BACNET_LIFE_SAFETY_OPERATION operation;
-    BACNET_OBJECT_ID targetObject;
+    uint32_t						processId;
+    BACNET_CHARACTER_STRING			requestingSrc;
+    BACNET_LIFE_SAFETY_OPERATION	operation;
+    BACNET_OBJECT_ID				targetObject;
 } BACNET_LSO_DATA;
 
 
 int lso_encode_apdu(
-    uint8_t * apdu,
-    uint8_t invoke_id,
-    BACNET_LSO_DATA * data
+    uint8_t *			apdu,
+    uint8_t				invoke_id,
+    BACNET_LSO_DATA *	data
 );
 /* decode the service request only */
 int lso_decode_service_request(
-    uint8_t * apdu,
-    unsigned apdu_len,
-    BACNET_LSO_DATA * data
+    uint8_t *			apdu,
+    unsigned			apdu_len,
+    BACNET_LSO_DATA *	data
 );
 
 

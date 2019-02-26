@@ -113,16 +113,16 @@
 
 /* largest BACnet Instance Number */
 /* Also used as a device instance number wildcard address */
-#define BACNET_MAX_INSTANCE (0x3FFFFF)
+#define BACNET_MAX_INSTANCE (0x3Fffff)
 #define BACNET_INSTANCE_BITS 22
 /* large BACnet Object Type */
 #define BACNET_MAX_OBJECT (0x3FF)
 /* Array index 0=size of array, n=array element n,  MAX=all array elements */
 /* 32-bit MAX, to use with uint32_t */
-#define BACNET_ARRAY_ALL 0xFFFFFFFFU
+#define BACNET_ARRAY_ALL 0xFFFFffffU
 /* For device object property references with no device id defined */
-#define BACNET_NO_DEV_ID   0xFFFFFFFFu
-#define BACNET_NO_DEV_TYPE 0xFFFFu
+#define BACNET_NO_DEV_ID   0xFFFFffffU
+#define BACNET_NO_DEV_TYPE 0xFFFFU
 /* Priority Array for commandable objects */
 #define BACNET_NO_PRIORITY 0
 #define BACNET_MIN_PRIORITY 1

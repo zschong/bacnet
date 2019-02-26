@@ -32,10 +32,10 @@
 
 typedef struct
 {
-    BACNET_OBJECT_ID objectIdentifier;
-    BACNET_PROPERTY_ID propertyIdentifier;
-    uint32_t arrayIndex;
-    BACNET_OBJECT_ID deviceIndentifier;
+    BACNET_OBJECT_ID		objectIdentifier;
+    BACNET_PROPERTY_ID		propertyIdentifier;
+    uint32_t				arrayIndex;
+    BACNET_OBJECT_ID		deviceIndentifier;
 } BACNET_DEVICE_OBJECT_PROPERTY_REFERENCE;
 
 /** BACnetDeviceObjectReference structure.

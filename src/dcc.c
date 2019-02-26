@@ -49,16 +49,12 @@ static BACNET_COMMUNICATION_ENABLE_DISABLE DCC_Enable_Disable =
     COMMUNICATION_ENABLE;
 /* password is optionally supported */
 
-BACNET_COMMUNICATION_ENABLE_DISABLE dcc_enable_status(
-    void
-)
+BACNET_COMMUNICATION_ENABLE_DISABLE dcc_enable_status(void)
 {
     return DCC_Enable_Disable;
 }
 
-bool dcc_communication_enabled(
-    void
-)
+bool dcc_communication_enabled(void)
 {
     return (DCC_Enable_Disable == COMMUNICATION_ENABLE);
 }
@@ -66,9 +62,7 @@ bool dcc_communication_enabled(
 /* When network communications are completely disabled,
    only DeviceCommunicationControl and ReinitializeDevice APDUs
    shall be processed and no messages shall be initiated.*/
-bool dcc_communication_disabled(
-    void
-)
+bool dcc_communication_disabled(void)
 {
     return (DCC_Enable_Disable == COMMUNICATION_DISABLE);
 }
@@ -82,17 +76,13 @@ bool dcc_communication_disabled(
    for any Who-Is request that is received if and only if
    the Who-Is request does not contain an address range or
    the device is included in the address range. */
-bool dcc_communication_initiation_disabled(
-    void
-)
+bool dcc_communication_initiation_disabled(void)
 {
     return (DCC_Enable_Disable == COMMUNICATION_DISABLE_INITIATION);
 }
 
 /* note: 0 indicates either expired, or infinite duration */
-uint32_t dcc_duration_seconds(
-    void
-)
+uint32_t dcc_duration_seconds(void)
 {
     return DCC_Time_Duration_Seconds;
 }
@@ -106,12 +96,19 @@ void dcc_timer_seconds(
     if (DCC_Time_Duration_Seconds)
     {
         if (DCC_Time_Duration_Seconds > seconds)
+		{
             DCC_Time_Duration_Seconds -= seconds;
+		}
         else
+		{
             DCC_Time_Duration_Seconds = 0;
+		}
+
         /* just expired - do something */
         if (DCC_Time_Duration_Seconds == 0)
+		{
             DCC_Enable_Disable = COMMUNICATION_ENABLE;
+		}
     }
 }
 
@@ -161,21 +158,25 @@ int dcc_encode_apdu(
         apdu[2] = invoke_id;
         apdu[3] = SERVICE_CONFIRMED_DEVICE_COMMUNICATION_CONTROL;
         apdu_len = 4;
+
         /* optional timeDuration */
         if (timeDuration)
         {
             len = encode_context_unsigned(&apdu[apdu_len], 0, timeDuration);
             apdu_len += len;
         }
+
         /* enable disable */
         len = encode_context_enumerated(&apdu[apdu_len], 1, enable_disable);
         apdu_len += len;
+
         /* optional password */
         if (password)
         {
             /* FIXME: must be at least 1 character, limited to 20 characters */
-            len =
-                encode_context_character_string(&apdu[apdu_len], 2, password);
+            len = encode_context_character_string(&apdu[apdu_len], 
+												  2, 
+												  password);
             apdu_len += len;
         }
     }
@@ -186,17 +187,17 @@ int dcc_encode_apdu(
 
 /* decode the service request only */
 int dcc_decode_service_request(
-    uint8_t * apdu,
-    unsigned apdu_len,
-    uint16_t * timeDuration,
-    BACNET_COMMUNICATION_ENABLE_DISABLE * enable_disable,
-    BACNET_CHARACTER_STRING * password
+    uint8_t *								apdu,
+    unsigned								apdu_len,
+    uint16_t *								timeDuration,
+    BACNET_COMMUNICATION_ENABLE_DISABLE *	enable_disable,
+    BACNET_CHARACTER_STRING *				password
 )
 {
-    unsigned len = 0;
-    uint8_t tag_number = 0;
+    unsigned len			= 0;
+    uint8_t tag_number		= 0;
     uint32_t len_value_type = 0;
-    uint32_t value32 = 0;
+    uint32_t value32		= 0;
 
     /* check for value pointers */
     if (apdu_len)
@@ -206,10 +207,14 @@ int dcc_decode_service_request(
          * which we return as "very large" */
         if (decode_is_context_tag(&apdu[len], 0))
         {
-            len +=
-                decode_tag_number_and_value(&apdu[len], &tag_number,
-                                            &len_value_type);
-            len += decode_unsigned(&apdu[len], len_value_type, &value32);
+            len += decode_tag_number_and_value(&apdu[len], 
+											   &tag_number,
+											   &len_value_type);
+
+            len += decode_unsigned(&apdu[len], 
+									len_value_type, 
+									&value32);
+
             if (timeDuration)
             {
                 *timeDuration = (uint16_t) value32;
@@ -226,10 +231,14 @@ int dcc_decode_service_request(
         {
             return -1;
         }
-        len +=
-            decode_tag_number_and_value(&apdu[len], &tag_number,
-                                        &len_value_type);
-        len += decode_enumerated(&apdu[len], len_value_type, &value32);
+        len += decode_tag_number_and_value(&apdu[len], 
+										   &tag_number,
+										   &len_value_type);
+
+        len += decode_enumerated(&apdu[len], 
+								 len_value_type, 
+								 &value32);
+
         if (enable_disable)
         {
             *enable_disable = (BACNET_COMMUNICATION_ENABLE_DISABLE) value32;
@@ -241,11 +250,13 @@ int dcc_decode_service_request(
             {
                 return -1;
             }
-            len +=
-                decode_tag_number_and_value(&apdu[len], &tag_number,
-                                            &len_value_type);
-            len +=
-                decode_character_string(&apdu[len], len_value_type, password);
+            len += decode_tag_number_and_value(&apdu[len], 
+											   &tag_number, 
+											   &len_value_type);
+
+            len += decode_character_string(&apdu[len], 
+											len_value_type, 
+											password);
         }
         else if (password)
         {
@@ -274,21 +285,32 @@ int dcc_decode_apdu(
     unsigned offset = 0;
 
     if (!apdu)
+	{
         return -1;
+	}
+
     /* optional checking - most likely was already done prior to this call */
     if (apdu[0] != PDU_TYPE_CONFIRMED_SERVICE_REQUEST)
+	{
         return -1;
+	}
+
     /*  apdu[1] = encode_max_segs_max_apdu(0, MAX_APDU); */
-    *invoke_id = apdu[2];       /* invoke id - filled in by net layer */
+	/* invoke id - filled in by net layer */
+    *invoke_id = apdu[2];       
     if (apdu[3] != SERVICE_CONFIRMED_DEVICE_COMMUNICATION_CONTROL)
+	{
         return -1;
+	}
     offset = 4;
 
     if (apdu_len > offset)
     {
-        len =
-            dcc_decode_service_request(&apdu[offset], apdu_len - offset,
-                                       timeDuration, enable_disable, password);
+        len = dcc_decode_service_request(&apdu[offset], 
+										 apdu_len - offset,
+										 timeDuration, 
+										 enable_disable, 
+										 password);
     }
 
     return len;
@@ -302,23 +324,30 @@ void test_DeviceCommunicationControlData(
     BACNET_CHARACTER_STRING * password
 )
 {
-    uint8_t apdu[480] = { 0 };
-    int len = 0;
-    int apdu_len = 0;
-    uint8_t test_invoke_id = 0;
-    uint16_t test_timeDuration = 0;
-    BACNET_COMMUNICATION_ENABLE_DISABLE test_enable_disable;
-    BACNET_CHARACTER_STRING test_password;
+    uint8_t apdu[480]										= { 0 };
+    int len													= 0;
+    int apdu_len											= 0;
+    uint8_t test_invoke_id									= 0;
+    uint16_t test_timeDuration								= 0;
+    BACNET_COMMUNICATION_ENABLE_DISABLE test_enable_disable	= 0;
+    BACNET_CHARACTER_STRING test_password					   ;
 
-    len =
-        dcc_encode_apdu(&apdu[0], invoke_id, timeDuration, enable_disable,
-                        password);
+    len = dcc_encode_apdu(&apdu[0], 
+						  invoke_id, 
+						  timeDuration, 
+						  enable_disable,
+						  password);
+
     ct_test(pTest, len != 0);
     apdu_len = len;
 
-    len =
-        dcc_decode_apdu(&apdu[0], apdu_len, &test_invoke_id,
-                        &test_timeDuration, &test_enable_disable, &test_password);
+    len = dcc_decode_apdu(&apdu[0], 
+						  apdu_len, 
+						  &test_invoke_id,
+						  &test_timeDuration, 
+						  &test_enable_disable, 
+						  &test_password);
+
     ct_test(pTest, len != -1);
     ct_test(pTest, test_invoke_id == invoke_id);
     ct_test(pTest, test_timeDuration == timeDuration);

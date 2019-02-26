@@ -61,37 +61,53 @@ int lighting_command_encode(
 
     if (apdu)
     {
-        len = encode_context_enumerated(&apdu[apdu_len], 0, data->operation);
+        len = encode_context_enumerated(&apdu[apdu_len], 
+										0, 
+										data->operation);
         apdu_len += len;
+
         /* optional target-level */
         if (data->use_target_level)
         {
-            len = encode_context_real(&apdu[apdu_len], 1, data->target_level);
+            len = encode_context_real(&apdu[apdu_len], 
+									  1, 
+									  data->target_level);
             apdu_len += len;
         }
+
         /* optional ramp-rate */
         if (data->use_ramp_rate)
         {
-            len = encode_context_real(&apdu[apdu_len], 2, data->ramp_rate);
+            len = encode_context_real(&apdu[apdu_len], 
+									  2, 
+									  data->ramp_rate);
             apdu_len += len;
         }
+
         /* optional step increment */
         if (data->use_step_increment)
         {
-            len =
-                encode_context_real(&apdu[apdu_len], 3, data->step_increment);
+            len = encode_context_real(&apdu[apdu_len], 
+									  3, 
+									  data->step_increment);
             apdu_len += len;
         }
+
         /* optional fade time */
         if (data->use_fade_time)
         {
-            len = encode_context_unsigned(&apdu[apdu_len], 4, data->fade_time);
+            len = encode_context_unsigned(&apdu[apdu_len], 
+										  4, 
+										  data->fade_time);
             apdu_len += len;
         }
+
         /* optional priority */
         if (data->use_priority)
         {
-            len = encode_context_unsigned(&apdu[apdu_len], 5, data->priority);
+            len = encode_context_unsigned(&apdu[apdu_len], 
+										  5, 
+										  data->priority);
             apdu_len += len;
         }
     }
@@ -139,38 +155,42 @@ int lighting_command_decode(
     BACNET_LIGHTING_COMMAND * data
 )
 {
-    int len = 0;
-    int apdu_len = 0;
-    uint8_t tag_number = 0;
+    int len					= 0;
+    int apdu_len			= 0;
+    uint8_t tag_number		= 0;
     uint32_t len_value_type = 0;
     uint32_t unsigned_value = 0;
-    float real_value = 0.0;
+    float real_value		= 0.0;
 
     apdu_max_len = apdu_max_len;
+
     /* check for value pointers */
     if (apdu_max_len && data)
     {
         /* Tag 0: operation */
         if (!decode_is_context_tag(&apdu[apdu_len], 0))
+		{
             return BACNET_STATUS_ERROR;
-        len =
-            decode_tag_number_and_value(&apdu[apdu_len], &tag_number,
-                                        &len_value_type);
+		}
+        len = decode_tag_number_and_value(&apdu[apdu_len],	
+										  &tag_number,
+										  &len_value_type);
         apdu_len += len;
-        len =
-            decode_enumerated(&apdu[apdu_len], len_value_type,
-                              &unsigned_value);
+        len = decode_enumerated(&apdu[apdu_len], 
+								len_value_type,
+								&unsigned_value);
         if (len > 0)
         {
             data->operation = unsigned_value;
         }
         apdu_len += len;
+
         /* Tag 1: target-level - OPTIONAL */
         if (decode_is_context_tag(&apdu[apdu_len], 1))
         {
-            len =
-                decode_tag_number_and_value(&apdu[apdu_len], &tag_number,
-                                            &len_value_type);
+            len = decode_tag_number_and_value(&apdu[apdu_len], 
+											  &tag_number,
+											  &len_value_type);
             apdu_len += len;
             len = decode_real(&apdu[apdu_len], &real_value);
             data->target_level = real_value;

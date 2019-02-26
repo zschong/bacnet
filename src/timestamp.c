@@ -75,19 +75,21 @@ int bacapp_encode_timestamp(
         switch (value->tag)
         {
         case TIME_STAMP_TIME:
-            len = encode_context_time(&apdu[0], 0, &value->value.time);
+            len = encode_context_time(&apdu[0], 
+									  0, 
+									  &value->value.time);
             break;
 
         case TIME_STAMP_SEQUENCE:
-            len =
-                encode_context_unsigned(&apdu[0], 1,
-                                        value->value.sequenceNum);
+            len = encode_context_unsigned(&apdu[0], 
+										  1,
+										  value->value.sequenceNum);
             break;
 
         case TIME_STAMP_DATETIME:
-            len =
-                bacapp_encode_context_datetime(&apdu[0], 2,
-                                               &value->value.dateTime);
+            len = bacapp_encode_context_datetime(&apdu[0], 
+												 2,
+												 &value->value.dateTime);
             break;
 
         default:
@@ -111,12 +113,12 @@ int bacapp_encode_context_timestamp(
 
     if (value && apdu)
     {
-        len = encode_opening_tag(&apdu[apdu_len], tag_number);
-        apdu_len += len;
-        len = bacapp_encode_timestamp(&apdu[apdu_len], value);
-        apdu_len += len;
-        len = encode_closing_tag(&apdu[apdu_len], tag_number);
-        apdu_len += len;
+        len			 = encode_opening_tag(&apdu[apdu_len], tag_number);
+        apdu_len	+= len;
+        len			 = bacapp_encode_timestamp(&apdu[apdu_len], value);
+        apdu_len	+= len;
+        len			 = encode_closing_tag(&apdu[apdu_len], tag_number);
+        apdu_len	+= len;
     }
     return apdu_len;
 }
@@ -134,7 +136,8 @@ int bacapp_decode_timestamp(
     if (apdu)
     {
         section_len =
-            decode_tag_number_and_value(&apdu[len], &value->tag,
+            decode_tag_number_and_value(&apdu[len], 
+										&value->tag,
                                         &len_value_type);
 
         if (-1 == section_len)
@@ -144,9 +147,9 @@ int bacapp_decode_timestamp(
         switch (value->tag)
         {
         case TIME_STAMP_TIME:
-            if ((section_len =
-                        decode_context_bacnet_time(&apdu[len], TIME_STAMP_TIME,
-                                                   &value->value.time)) == -1)
+            if ((section_len = decode_context_bacnet_time(&apdu[len], 
+														  TIME_STAMP_TIME,
+														  &value->value.time)) == -1)
             {
                 return -1;
             }
@@ -157,9 +160,9 @@ int bacapp_decode_timestamp(
             break;
 
         case TIME_STAMP_SEQUENCE:
-            if ((section_len =
-                        decode_context_unsigned(&apdu[len],
-                                                TIME_STAMP_SEQUENCE, &sequenceNum)) == -1)
+            if ((section_len = decode_context_unsigned(&apdu[len],
+													   TIME_STAMP_SEQUENCE, 
+													   &sequenceNum)) == -1)
             {
                 return -1;
             }
@@ -178,10 +181,9 @@ int bacapp_decode_timestamp(
             break;
 
         case TIME_STAMP_DATETIME:
-            if ((section_len =
-                        bacapp_decode_context_datetime(&apdu[len],
-                                TIME_STAMP_DATETIME,
-                                &value->value.dateTime)) == -1)
+            if ((section_len = bacapp_decode_context_datetime(&apdu[len],
+															  TIME_STAMP_DATETIME,
+															  &value->value.dateTime)) == -1)
             {
                 return -1;
             }
@@ -240,26 +242,23 @@ void testTimestampSequence(
     Test * pTest
 )
 {
+    int		inLen  = 0;
+    int		outLen = 0;
+    uint8_t buffer[MAX_APDU];
     BACNET_TIMESTAMP testTimestampIn;
     BACNET_TIMESTAMP testTimestampOut;
-    uint8_t buffer[MAX_APDU];
-    int inLen;
-    int outLen;
 
     testTimestampIn.tag = TIME_STAMP_SEQUENCE;
     testTimestampIn.value.sequenceNum = 0x1234;
 
     memset(&testTimestampOut, 0, sizeof(testTimestampOut));
 
-
-    inLen = bacapp_encode_context_timestamp(buffer, 2, &testTimestampIn);
+    inLen  = bacapp_encode_context_timestamp(buffer, 2, &testTimestampIn);
     outLen = bacapp_decode_context_timestamp(buffer, 2, &testTimestampOut);
 
     ct_test(pTest, inLen == outLen);
     ct_test(pTest, testTimestampIn.tag == testTimestampOut.tag);
-    ct_test(pTest,
-            testTimestampIn.value.sequenceNum ==
-            testTimestampOut.value.sequenceNum);
+    ct_test(pTest, testTimestampIn.value.sequenceNum == testTimestampOut.value.sequenceNum);
 }
 
 void testTimestampTime(
@@ -272,11 +271,11 @@ void testTimestampTime(
     int inLen;
     int outLen;
 
-    testTimestampIn.tag = TIME_STAMP_TIME;
-    testTimestampIn.value.time.hour = 1;
-    testTimestampIn.value.time.min = 2;
-    testTimestampIn.value.time.sec = 3;
-    testTimestampIn.value.time.hundredths = 4;
+    testTimestampIn.tag						= TIME_STAMP_TIME;
+    testTimestampIn.value.time.hour			= 1;
+    testTimestampIn.value.time.min			= 2;
+    testTimestampIn.value.time.sec			= 3;
+    testTimestampIn.value.time.hundredths	= 4;
 
     memset(&testTimestampOut, 0, sizeof(testTimestampOut));
 

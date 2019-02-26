@@ -72,22 +72,20 @@ int bacapp_encode_application_data(
 #endif
 #if defined (BACAPP_BOOLEAN)
         case BACNET_APPLICATION_TAG_BOOLEAN:
-            apdu_len =
-                encode_application_boolean(&apdu[0], value->type.Boolean);
+            apdu_len = encode_application_boolean(&apdu[0], 
+												  value->type.Boolean);
             break;
 #endif
 #if defined (BACAPP_UNSIGNED)
         case BACNET_APPLICATION_TAG_UNSIGNED_INT:
-            apdu_len =
-                encode_application_unsigned(&apdu[0],
-                                            value->type.Unsigned_Int);
+            apdu_len = encode_application_unsigned(&apdu[0],
+												   value->type.Unsigned_Int);
             break;
 #endif
 #if defined (BACAPP_SIGNED)
         case BACNET_APPLICATION_TAG_SIGNED_INT:
-            apdu_len =
-                encode_application_signed(&apdu[0],
-                                          value->type.Signed_Int);
+            apdu_len = encode_application_signed(&apdu[0],
+												 value->type.Signed_Int);
             break;
 #endif
 #if defined (BACAPP_REAL)
@@ -97,71 +95,61 @@ int bacapp_encode_application_data(
 #endif
 #if defined (BACAPP_DOUBLE)
         case BACNET_APPLICATION_TAG_DOUBLE:
-            apdu_len =
-                encode_application_double(&apdu[0], value->type.Double);
+            apdu_len = encode_application_double(&apdu[0], value->type.Double);
             break;
 #endif
 #if defined (BACAPP_OCTET_STRING)
         case BACNET_APPLICATION_TAG_OCTET_STRING:
-            apdu_len =
-                encode_application_octet_string(&apdu[0],
-                                                &value->type.Octet_String);
+            apdu_len = encode_application_octet_string(&apdu[0],
+													   &value->type.Octet_String);
             break;
 #endif
 #if defined (BACAPP_CHARACTER_STRING)
         case BACNET_APPLICATION_TAG_CHARACTER_STRING:
-            apdu_len =
-                encode_application_character_string(&apdu[0],
-                                                    &value->type.Character_String);
+            apdu_len = encode_application_character_string(&apdu[0],
+														   &value->type.Character_String);
             break;
 #endif
 #if defined (BACAPP_BIT_STRING)
         case BACNET_APPLICATION_TAG_BIT_STRING:
-            apdu_len =
-                encode_application_bitstring(&apdu[0],
-                                             &value->type.Bit_String);
+            apdu_len = encode_application_bitstring(&apdu[0],
+													&value->type.Bit_String);
             break;
 #endif
 #if defined (BACAPP_ENUMERATED)
         case BACNET_APPLICATION_TAG_ENUMERATED:
-            apdu_len =
-                encode_application_enumerated(&apdu[0],
-                                              value->type.Enumerated);
+            apdu_len = encode_application_enumerated(&apdu[0],
+													 value->type.Enumerated);
             break;
 #endif
 #if defined (BACAPP_DATE)
         case BACNET_APPLICATION_TAG_DATE:
-            apdu_len =
-                encode_application_date(&apdu[0], &value->type.Date);
+            apdu_len = encode_application_date(&apdu[0], &value->type.Date);
             break;
 #endif
 #if defined (BACAPP_TIME)
         case BACNET_APPLICATION_TAG_TIME:
-            apdu_len =
-                encode_application_time(&apdu[0], &value->type.Time);
+            apdu_len = encode_application_time(&apdu[0], &value->type.Time);
             break;
 #endif
 #if defined (BACAPP_OBJECT_ID)
         case BACNET_APPLICATION_TAG_OBJECT_ID:
-            apdu_len =
-                encode_application_object_id(&apdu[0],
-                                             (int) value->type.Object_Id.type,
-                                             value->type.Object_Id.instance);
+            apdu_len = encode_application_object_id(&apdu[0],
+													(int) value->type.Object_Id.type,
+													value->type.Object_Id.instance);
             break;
 #endif
 #if defined (BACAPP_LIGHTING_COMMAND)
         case BACNET_APPLICATION_TAG_LIGHTING_COMMAND:
-            apdu_len =
-                lighting_command_encode(&apdu[0],
-                                        &value->type.Lighting_Command);
+            apdu_len = lighting_command_encode(&apdu[0],
+											   &value->type.Lighting_Command);
             break;
 #endif
 #if defined (BACAPP_DEVICE_OBJECT_PROP_REF)
         case BACNET_APPLICATION_TAG_DEVICE_OBJECT_PROPERTY_REFERENCE:
             /* BACnetDeviceObjectPropertyReference */
-            apdu_len =
-                bacapp_encode_device_obj_property_ref(&apdu[0],
-                        &value->type.Device_Object_Property_Reference);
+            apdu_len = bacapp_encode_device_obj_property_ref(&apdu[0],
+															&value->type.Device_Object_Property_Reference);
             break;
 #endif
         default:

@@ -59,27 +59,35 @@ static int notify_encode_apdu(
     if (apdu)
     {
         /* tag 0 - subscriberProcessIdentifier */
-        len =
-            encode_context_unsigned(&apdu[apdu_len], 0,
-                                    data->subscriberProcessIdentifier);
+        len = encode_context_unsigned(&apdu[apdu_len], 
+									  0,
+									  data->subscriberProcessIdentifier);
         apdu_len += len;
+
         /* tag 1 - initiatingDeviceIdentifier */
-        len =
-            encode_context_object_id(&apdu[apdu_len], 1, OBJECT_DEVICE,
-                                     data->initiatingDeviceIdentifier);
+        len = encode_context_object_id(&apdu[apdu_len], 
+										1, 
+										OBJECT_DEVICE,
+										data->initiatingDeviceIdentifier);
         apdu_len += len;
+
         /* tag 2 - monitoredObjectIdentifier */
-        len =
-            encode_context_object_id(&apdu[apdu_len], 2,
-                                     (int) data->monitoredObjectIdentifier.type,
-                                     data->monitoredObjectIdentifier.instance);
+        len = encode_context_object_id(&apdu[apdu_len], 
+										2,
+										(int) data->monitoredObjectIdentifier.type,
+										data->monitoredObjectIdentifier.instance);
         apdu_len += len;
+
         /* tag 3 - timeRemaining */
-        len = encode_context_unsigned(&apdu[apdu_len], 3, data->timeRemaining);
+        len = encode_context_unsigned(&apdu[apdu_len], 
+									  3, 
+									  data->timeRemaining);
         apdu_len += len;
+
         /* tag 4 - listOfValues */
         len = encode_opening_tag(&apdu[apdu_len], 4);
         apdu_len += len;
+
         /* the first value includes a pointer to the next value, etc */
         /* FIXME: for small implementations, we might try a partial
            approach like the rpm.c where the values are encoded with
@@ -88,18 +96,20 @@ static int notify_encode_apdu(
         while (value != NULL)
         {
             /* tag 0 - propertyIdentifier */
-            len =
-                encode_context_enumerated(&apdu[apdu_len], 0,
-                                          value->propertyIdentifier);
+            len = encode_context_enumerated(&apdu[apdu_len], 
+											0,
+											value->propertyIdentifier);
             apdu_len += len;
+
             /* tag 1 - propertyArrayIndex OPTIONAL */
             if (value->propertyArrayIndex != BACNET_ARRAY_ALL)
             {
-                len =
-                    encode_context_unsigned(&apdu[apdu_len], 1,
-                                            value->propertyArrayIndex);
+                len = encode_context_unsigned(&apdu[apdu_len], 
+											  1,
+											  value->propertyArrayIndex);
                 apdu_len += len;
             }
+
             /* tag 2 - value */
             /* abstract syntax gets enclosed in a context tag */
             len = encode_opening_tag(&apdu[apdu_len], 2);
@@ -107,22 +117,22 @@ static int notify_encode_apdu(
             app_data = &value->value;
             while (app_data != NULL)
             {
-                len =
-                    bacapp_encode_application_data(&apdu[apdu_len], app_data);
+                len		  = bacapp_encode_application_data(&apdu[apdu_len], app_data);
                 apdu_len += len;
-                app_data = app_data->next;
+                app_data  = app_data->next;
             }
-
             len = encode_closing_tag(&apdu[apdu_len], 2);
             apdu_len += len;
+
             /* tag 3 - priority OPTIONAL */
             if (value->priority != BACNET_NO_PRIORITY)
             {
-                len =
-                    encode_context_unsigned(&apdu[apdu_len], 3,
-                                            value->priority);
+                len = encode_context_unsigned(&apdu[apdu_len], 
+											  3,
+											  value->priority);
                 apdu_len += len;
             }
+
             /* is there another one to encode? */
             /* FIXME: check to see if there is room in the APDU */
             value = value->next;

@@ -48,6 +48,7 @@ static int pt_encode_apdu(
 {
     int len = 0;        /* length of each encoding */
     int apdu_len = 0;   /* total length of the apdu, return value */
+
     /*
        Unconfirmed/ConfirmedPrivateTransfer-Request ::= SEQUENCE {
        vendorID               [0] Unsigned,
@@ -60,11 +61,13 @@ static int pt_encode_apdu(
     if (apdu)
     {
         len =
-            encode_context_unsigned(&apdu[apdu_len], 0,
+            encode_context_unsigned(&apdu[apdu_len], 
+									0,
                                     private_data->vendorID);
         apdu_len += len;
         len =
-            encode_context_unsigned(&apdu[apdu_len], 1,
+            encode_context_unsigned(&apdu[apdu_len], 
+									1,
                                     private_data->serviceNumber);
         apdu_len += len;
         len = encode_opening_tag(&apdu[apdu_len], 2);
@@ -97,9 +100,9 @@ int ptransfer_encode_apdu(
         apdu[2] = invoke_id;
         apdu[3] = SERVICE_CONFIRMED_PRIVATE_TRANSFER;
         apdu_len = 4;
-        len =
-            pt_encode_apdu(&apdu[apdu_len], (uint16_t) (MAX_APDU - apdu_len),
-                           private_data);
+        len = pt_encode_apdu(&apdu[apdu_len], 
+							 (uint16_t) (MAX_APDU - apdu_len),
+							 private_data);
         apdu_len += len;
     }
 
@@ -119,9 +122,9 @@ int uptransfer_encode_apdu(
         apdu[0] = PDU_TYPE_UNCONFIRMED_SERVICE_REQUEST;
         apdu[1] = SERVICE_UNCONFIRMED_PRIVATE_TRANSFER;
         apdu_len = 2;
-        len =
-            pt_encode_apdu(&apdu[apdu_len], (uint16_t) (MAX_APDU - apdu_len),
-                           private_data);
+        len = pt_encode_apdu(&apdu[apdu_len], 
+							 (uint16_t) (MAX_APDU - apdu_len),
+							 private_data);
         apdu_len += len;
     }
 
@@ -135,21 +138,24 @@ int ptransfer_decode_service_request(
     BACNET_PRIVATE_TRANSFER_DATA * private_data
 )
 {
-    int len = 0;        /* return value */
-    int decode_len = 0; /* return value */
+    int len					= 0;	/* return value */
+    int decode_len			= 0;	/* return value */
     uint32_t unsigned_value = 0;
 
     /* check for value pointers */
     if (apdu_len && private_data)
     {
         /* Tag 0: vendorID */
-        decode_len = decode_context_unsigned(&apdu[len], 0, &unsigned_value);
+        decode_len = decode_context_unsigned(&apdu[len], 
+											 0, 
+											 &unsigned_value);
         if (decode_len < 0)
         {
             return -1;
         }
         len = decode_len;
         private_data->vendorID = (uint16_t) unsigned_value;
+
         /* Tag 1: serviceNumber */
         decode_len = decode_context_unsigned(&apdu[len], 1, &unsigned_value);
         if (decode_len < 0)

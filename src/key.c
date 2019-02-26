@@ -56,9 +56,9 @@ void testKeys(
     {
         for (id = 0; id < KEY_ID_MAX; id++)
         {
-            key = KEY_ENCODE(type, id);
-            decoded_type = KEY_DECODE_TYPE(key);
-            decoded_id = KEY_DECODE_ID(key);
+            key				= KEY_ENCODE(type, id);
+            decoded_type	= KEY_DECODE_TYPE(key);
+            decoded_id		= KEY_DECODE_ID(key);
             ct_test(pTest, decoded_type == type);
             ct_test(pTest, decoded_id == id);
         }
@@ -72,23 +72,25 @@ void testKeySample(
     Test * pTest
 )
 {
-    int type, id;
-    int type_list[] = { 0, 1, KEY_TYPE_MAX / 2, KEY_TYPE_MAX - 1, -1 };
-    int id_list[] = { 0, 1, KEY_ID_MAX / 2, KEY_ID_MAX - 1, -1 };
-    int type_index = 0;
-    int id_index = 0;
-    int decoded_type, decoded_id;
+    int type			= 0;
+	int id				= 0;
+    int type_list[]		= { 0, 1, KEY_TYPE_MAX / 2, KEY_TYPE_MAX - 1, -1 };
+    int id_list[]		= { 0, 1, KEY_ID_MAX / 2, KEY_ID_MAX - 1, -1 };
+    int type_index		= 0;
+    int id_index		= 0;
+    int decoded_type	= 0;
+	int decoded_id		= 0;
     KEY key;
 
     while (type_list[type_index] != -1)
     {
         while (id_list[id_index] != -1)
         {
-            type = type_list[type_index];
-            id = id_list[id_index];
-            key = KEY_ENCODE(type, id);
-            decoded_type = KEY_DECODE_TYPE(key);
-            decoded_id = KEY_DECODE_ID(key);
+            type			= type_list[type_index];
+            id				= id_list[id_index];
+            key				= KEY_ENCODE(type, id);
+            decoded_type	= KEY_DECODE_TYPE(key);
+            decoded_id		= KEY_DECODE_ID(key);
             ct_test(pTest, decoded_type == type);
             ct_test(pTest, decoded_id == id);
 

@@ -64,9 +64,7 @@ bool(*datalink_init) (char *ifname);
  * @param pdu_len [in] Number of bytes in the pdu buffer.
  * @return Number of bytes sent on success, negative number on failure.
  */
-int (
-    *datalink_send_pdu
-)   (
+int (*datalink_send_pdu)(
     BACNET_ADDRESS * dest,
     BACNET_NPDU_DATA * npdu_data,
     uint8_t * pdu,
@@ -79,21 +77,13 @@ uint16_t(*datalink_receive) (BACNET_ADDRESS * src, uint8_t * pdu,
 /** Function template to close the DataLink services and perform any cleanup.
  * @ingroup DLTemplates
  */
-void (
-    *datalink_cleanup
-)    (
-    void
-);
+void (*datalink_cleanup) (void);
 
-void (
-    *datalink_get_broadcast_address
-)    (
+void (*datalink_get_broadcast_address) (
     BACNET_ADDRESS * dest
 );
 
-void (
-    *datalink_get_my_address
-)    (
+void (*datalink_get_my_address)(
     BACNET_ADDRESS * my_address
 );
 
@@ -103,48 +93,48 @@ void datalink_set(
 {
     if (strcasecmp("bip", datalink_string) == 0)
     {
-        datalink_init = bip_init;
-        datalink_send_pdu = bip_send_pdu;
-        datalink_receive = bip_receive;
-        datalink_cleanup = bip_cleanup;
-        datalink_get_broadcast_address = bip_get_broadcast_address;
-        datalink_get_my_address = bip_get_my_address;
+        datalink_init					= bip_init;
+        datalink_send_pdu				= bip_send_pdu;
+        datalink_receive				= bip_receive;
+        datalink_cleanup				= bip_cleanup;
+        datalink_get_broadcast_address	= bip_get_broadcast_address;
+        datalink_get_my_address			= bip_get_my_address;
     }
     else if (strcasecmp("bvlc", datalink_string) == 0)
     {
-        datalink_init = bip_init;
-        datalink_send_pdu = bvlc_send_pdu;
-        datalink_receive = bvlc_receive;
-        datalink_cleanup = bip_cleanup;
-        datalink_get_broadcast_address = bip_get_broadcast_address;
-        datalink_get_my_address = bip_get_my_address;
+        datalink_init					= bip_init;
+        datalink_send_pdu				= bvlc_send_pdu;
+        datalink_receive				= bvlc_receive;
+        datalink_cleanup				= bip_cleanup;
+        datalink_get_broadcast_address	= bip_get_broadcast_address;
+        datalink_get_my_address			= bip_get_my_address;
     }
     else if (strcasecmp("ethernet", datalink_string) == 0)
     {
-        datalink_init = ethernet_init;
-        datalink_send_pdu = ethernet_send_pdu;
-        datalink_receive = ethernet_receive;
-        datalink_cleanup = ethernet_cleanup;
-        datalink_get_broadcast_address = ethernet_get_broadcast_address;
-        datalink_get_my_address = ethernet_get_my_address;
+        datalink_init					= ethernet_init;
+        datalink_send_pdu				= ethernet_send_pdu;
+        datalink_receive				= ethernet_receive;
+        datalink_cleanup				= ethernet_cleanup;
+        datalink_get_broadcast_address	= ethernet_get_broadcast_address;
+        datalink_get_my_address			= ethernet_get_my_address;
     }
     else if (strcasecmp("arcnet", datalink_string) == 0)
     {
-        datalink_init = arcnet_init;
-        datalink_send_pdu = arcnet_send_pdu;
-        datalink_receive = arcnet_receive;
-        datalink_cleanup = arcnet_cleanup;
-        datalink_get_broadcast_address = arcnet_get_broadcast_address;
-        datalink_get_my_address = arcnet_get_my_address;
+        datalink_init					= arcnet_init;
+        datalink_send_pdu				= arcnet_send_pdu;
+        datalink_receive				= arcnet_receive;
+        datalink_cleanup				= arcnet_cleanup;
+        datalink_get_broadcast_address	= arcnet_get_broadcast_address;
+        datalink_get_my_address			= arcnet_get_my_address;
     }
     else if (strcasecmp("mstp", datalink_string) == 0)
     {
-        datalink_init = dlmstp_init;
-        datalink_send_pdu = dlmstp_send_pdu;
-        datalink_receive = dlmstp_receive;
-        datalink_cleanup = dlmstp_cleanup;
-        datalink_get_broadcast_address = dlmstp_get_broadcast_address;
-        datalink_get_my_address = dlmstp_get_my_address;
+        datalink_init					= dlmstp_init;
+        datalink_send_pdu				= dlmstp_send_pdu;
+        datalink_receive				= dlmstp_receive;
+        datalink_cleanup				= dlmstp_cleanup;
+        datalink_get_broadcast_address	= dlmstp_get_broadcast_address;
+        datalink_get_my_address			= dlmstp_get_my_address;
     }
 }
 #endif

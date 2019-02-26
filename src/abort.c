@@ -89,9 +89,13 @@ int abort_encode_apdu(
     if (apdu)
     {
         if (server)
+		{
             apdu[0] = PDU_TYPE_ABORT | 1;
+		}
         else
+		{
             apdu[0] = PDU_TYPE_ABORT;
+		}
         apdu[1] = invoke_id;
         apdu[2] = abort_reason;
         apdu_len = 3;
@@ -114,9 +118,13 @@ int abort_decode_service_request(
     if (apdu_len > 0)
     {
         if (invoke_id)
+		{
             *invoke_id = apdu[0];
+		}
         if (abort_reason)
+		{
             *abort_reason = apdu[1];
+		}
     }
 
     return len;
@@ -140,21 +148,31 @@ int abort_decode_apdu(
     int len = 0;
 
     if (!apdu)
+	{
         return -1;
+	}
+
     /* optional checking - most likely was already done prior to this call */
     if (apdu_len > 0)
     {
         if ((apdu[0] & 0xF0) != PDU_TYPE_ABORT)
+		{
             return -1;
+		}
         if (apdu[0] & 1)
+		{
             *server = true;
+		}
         else
+		{
             *server = false;
+		}
         if (apdu_len > 1)
         {
-            len =
-                abort_decode_service_request(&apdu[1], apdu_len - 1, invoke_id,
-                                             abort_reason);
+            len = abort_decode_service_request(&apdu[1], 
+												apdu_len - 1, 
+												invoke_id,
+												abort_reason);
         }
     }
 
@@ -175,12 +193,19 @@ void testAbortAPDU(
     uint8_t test_abort_reason = 0;
     bool test_server = false;
 
-    len = abort_encode_apdu(&apdu[0], invoke_id, abort_reason, server);
+    len = abort_encode_apdu(&apdu[0], 
+							invoke_id, 
+							abort_reason, 
+							server);
     apdu_len = len;
     ct_test(pTest, len != 0);
-    len =
-        abort_decode_apdu(&apdu[0], apdu_len, &test_invoke_id,
-                          &test_abort_reason, &test_server);
+
+    len = abort_decode_apdu(&apdu[0], 
+							apdu_len, 
+							&test_invoke_id,
+							&test_abort_reason, 
+							&test_server);
+
     ct_test(pTest, len != -1);
     ct_test(pTest, test_invoke_id == invoke_id);
     ct_test(pTest, test_abort_reason == abort_reason);
@@ -204,12 +229,20 @@ void testAbort(
     bool server = false;
     bool test_server = false;
 
-    len = abort_encode_apdu(&apdu[0], invoke_id, abort_reason, server);
+    len = abort_encode_apdu(&apdu[0], 
+							invoke_id, 
+							abort_reason, 
+							server);
+
     ct_test(pTest, len != 0);
     apdu_len = len;
-    len =
-        abort_decode_apdu(&apdu[0], apdu_len, &test_invoke_id,
-                          &test_abort_reason, &test_server);
+
+    len = abort_decode_apdu(&apdu[0], 
+							apdu_len, 
+							&test_invoke_id,
+							&test_abort_reason, 
+							&test_server);
+
     ct_test(pTest, len != -1);
     ct_test(pTest, test_invoke_id == invoke_id);
     ct_test(pTest, test_abort_reason == abort_reason);
@@ -217,21 +250,31 @@ void testAbort(
 
     /* change type to get negative response */
     apdu[0] = PDU_TYPE_REJECT;
-    len =
-        abort_decode_apdu(&apdu[0], apdu_len, &test_invoke_id,
-                          &test_abort_reason, &test_server);
+
+    len = abort_decode_apdu(&apdu[0], 
+							apdu_len, 
+							&test_invoke_id,
+							&test_abort_reason, 
+							&test_server);
+
     ct_test(pTest, len == -1);
 
     /* test NULL APDU */
-    len =
-        abort_decode_apdu(NULL, apdu_len, &test_invoke_id, &test_abort_reason,
-                          &test_server);
+    len = abort_decode_apdu(NULL, 
+							apdu_len, 
+							&test_invoke_id, 
+							&test_abort_reason,
+							&test_server);
+
     ct_test(pTest, len == -1);
 
     /* force a zero length */
-    len =
-        abort_decode_apdu(&apdu[0], 0, &test_invoke_id, &test_abort_reason,
-                          &test_server);
+    len = abort_decode_apdu(&apdu[0], 
+							0, 
+							&test_invoke_id, 
+							&test_abort_reason,
+							&test_server);
+
     ct_test(pTest, len == 0);
 
     /* check them all...   */

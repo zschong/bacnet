@@ -59,10 +59,15 @@ bool datetime_is_leap_year(
     uint16_t year
 )
 {
-    if ((year % 4) == 0 && ((year % 100) != 0 || (year % 400) == 0))
+    if ((year % 4) == 0 
+	&& ((year % 100) != 0 || (year % 400) == 0))
+	{
         return (true);
+	}
     else
+	{
         return (false);
+	}
 }
 
 uint8_t datetime_month_days(
@@ -99,7 +104,10 @@ bool datetime_ymd_is_valid(
     uint8_t monthdays = 0;      /* days in a month */
 
     monthdays = datetime_month_days(year, month);
-    if ((year >= 1900) && (monthdays > 0) && (day >= 1) && (day <= monthdays))
+    if ((year >= 1900) 
+	&& (monthdays > 0) 
+	&& (day >= 1) 
+	&& (day <= monthdays))
     {
         status = true;
     }
@@ -116,7 +124,9 @@ bool datetime_date_is_valid(
 
     if (bdate)
     {
-        status = datetime_ymd_is_valid(bdate->year, bdate->month, bdate->day);
+        status = datetime_ymd_is_valid(bdate->year, 
+									   bdate->month, 
+									   bdate->day);
     }
 
     return status;
@@ -182,8 +192,15 @@ void datetime_day_of_year_into_date(
     uint8_t month = 0;
     uint8_t day = 0;
 
-    day_of_year_into_md(days, year, &month, &day);
-    datetime_set_date(bdate, year, month, day);
+    day_of_year_into_md(days, 
+						year, 
+						&month, 
+						&day);
+
+    datetime_set_date(bdate, 
+					  year, 
+					  month, 
+					  day);
 }
 
 uint32_t datetime_day_of_year(
@@ -194,7 +211,9 @@ uint32_t datetime_day_of_year(
 
     if (bdate)
     {
-        days = day_of_year(bdate->year, bdate->month, bdate->day);
+        days = day_of_year(bdate->year, 
+						   bdate->month, 
+						   bdate->day);
     }
 
     return days;
@@ -215,9 +234,12 @@ static uint32_t days_since_epoch(
         {
             days += 365;
             if (datetime_is_leap_year(years))
+			{
                 days++;
+			}
         }
         days += day_of_year(year, month, day);
+
         /* 'days since' is one less */
         days -= 1;
     }
@@ -253,10 +275,14 @@ static void days_since_epoch_into_ymd(
     while (days >= 365)
     {
         if ((datetime_is_leap_year(year)) && (days == 365))
+		{
             break;
+		}
         days -= 365;
         if (datetime_is_leap_year(year))
+		{
             --days;
+		}
         year++;
     }
 
@@ -269,11 +295,17 @@ static void days_since_epoch_into_ymd(
     day = (uint8_t) (day + days);
 
     if (pYear)
+	{
         *pYear = year;
+	}
     if (pMonth)
+	{
         *pMonth = month;
+	}
     if (pDay)
+	{
         *pDay = day;
+	}
 
     return;
 }
