@@ -55,8 +55,10 @@ int arf_encode_apdu(
         apdu[2] = invoke_id;
         apdu[3] = SERVICE_CONFIRMED_ATOMIC_READ_FILE;   /* service choice */
         apdu_len = 4;
+
         apdu_len +=
-            encode_application_object_id(&apdu[apdu_len], data->object_type,
+            encode_application_object_id(&apdu[apdu_len], 
+										 data->object_type,
                                          data->object_instance);
         switch (data->access)
         {
@@ -105,11 +107,17 @@ int arf_decode_service_request(
     if (apdu_len && data)
     {
         len =
-            decode_tag_number_and_value(&apdu[0], &tag_number,
+            decode_tag_number_and_value(&apdu[0], 
+										&tag_number,
                                         &len_value_type);
         if (tag_number != BACNET_APPLICATION_TAG_OBJECT_ID)
+		{
             return -1;
-        len += decode_object_id(&apdu[len], &type, &data->object_instance);
+		}
+        len += decode_object_id(&apdu[len], 
+								&type, 
+								&data->object_instance);
+
         data->object_type = (BACNET_OBJECT_TYPE) type;
         if (decode_is_opening_tag_number(&apdu[len], 0))
         {
@@ -118,61 +126,93 @@ int arf_decode_service_request(
             len++;
             /* fileStartPosition */
             tag_len =
-                decode_tag_number_and_value(&apdu[len], &tag_number,
+                decode_tag_number_and_value(&apdu[len], 
+											&tag_number,
                                             &len_value_type);
             len += tag_len;
             if (tag_number != BACNET_APPLICATION_TAG_SIGNED_INT)
+			{
                 return -1;
+			}
             len +=
-                decode_signed(&apdu[len], len_value_type,
+                decode_signed(&apdu[len], 
+							  len_value_type,
                               &data->type.stream.fileStartPosition);
+
             /* requestedOctetCount */
             tag_len =
-                decode_tag_number_and_value(&apdu[len], &tag_number,
+                decode_tag_number_and_value(&apdu[len], 
+											&tag_number,
                                             &len_value_type);
             len += tag_len;
             if (tag_number != BACNET_APPLICATION_TAG_UNSIGNED_INT)
+			{
                 return -1;
+			}
             len +=
-                decode_unsigned(&apdu[len], len_value_type,
+                decode_unsigned(&apdu[len], 
+								len_value_type,
                                 &data->type.stream.requestedOctetCount);
+
             if (!decode_is_closing_tag_number(&apdu[len], 0))
+			{
                 return -1;
+			}
+
             /* a tag number is not extended so only one octet */
             len++;
         }
         else if (decode_is_opening_tag_number(&apdu[len], 1))
         {
             data->access = FILE_RECORD_ACCESS;
+
             /* a tag number is not extended so only one octet */
             len++;
+
             /* fileStartRecord */
             tag_len =
-                decode_tag_number_and_value(&apdu[len], &tag_number,
+                decode_tag_number_and_value(&apdu[len], 
+											&tag_number,
                                             &len_value_type);
             len += tag_len;
+
             if (tag_number != BACNET_APPLICATION_TAG_SIGNED_INT)
+			{
                 return -1;
+			}
             len +=
-                decode_signed(&apdu[len], len_value_type,
+                decode_signed(&apdu[len], 
+							  len_value_type,
                               &data->type.record.fileStartRecord);
+
             /* RecordCount */
             tag_len =
-                decode_tag_number_and_value(&apdu[len], &tag_number,
+                decode_tag_number_and_value(&apdu[len], 
+											&tag_number,
                                             &len_value_type);
             len += tag_len;
+
             if (tag_number != BACNET_APPLICATION_TAG_UNSIGNED_INT)
+			{
                 return -1;
+			}
             len +=
-                decode_unsigned(&apdu[len], len_value_type,
+                decode_unsigned(&apdu[len], 
+								len_value_type,
                                 &data->type.record.RecordCount);
+
             if (!decode_is_closing_tag_number(&apdu[len], 1))
+			{
                 return -1;
+			}
+
             /* a tag number is not extended so only one octet */
             len++;
         }
         else
+		{
             return -1;
+		}
     }
 
     return len;
@@ -189,20 +229,31 @@ int arf_decode_apdu(
     unsigned offset = 0;
 
     if (!apdu)
+	{
         return -1;
+	}
+
     /* optional checking - most likely was already done prior to this call */
     if (apdu[0] != PDU_TYPE_CONFIRMED_SERVICE_REQUEST)
+	{
         return -1;
+	}
+
     /*  apdu[1] = encode_max_segs_max_apdu(0, MAX_APDU); */
-    *invoke_id = apdu[2];       /* invoke id - filled in by net layer */
+	/* invoke id - filled in by net layer */
+    *invoke_id = apdu[2];       
     if (apdu[3] != SERVICE_CONFIRMED_ATOMIC_READ_FILE)
+	{
         return -1;
+	}
     offset = 4;
 
     if (apdu_len > offset)
     {
         len =
-            arf_decode_service_request(&apdu[offset], apdu_len - offset, data);
+            arf_decode_service_request(&apdu[offset], 
+										apdu_len - offset, 
+										data);
     }
 
     return len;
@@ -223,9 +274,11 @@ int arf_ack_encode_apdu(
         apdu[1] = invoke_id;
         apdu[2] = SERVICE_CONFIRMED_ATOMIC_READ_FILE;   /* service choice */
         apdu_len = 3;
+
         /* endOfFile */
         apdu_len +=
-            encode_application_boolean(&apdu[apdu_len], data->endOfFile);
+            encode_application_boolean(&apdu[apdu_len], 
+										data->endOfFile);
         switch (data->access)
         {
         case FILE_STREAM_ACCESS:
@@ -286,11 +339,14 @@ int arf_ack_decode_service_request(
         if (decode_is_opening_tag_number(&apdu[len], 0))
         {
             data->access = FILE_STREAM_ACCESS;
+
             /* a tag number is not extended so only one octet */
             len++;
+
             /* fileStartPosition */
             tag_len =
-                decode_tag_number_and_value(&apdu[len], &tag_number,
+                decode_tag_number_and_value(&apdu[len], 
+											&tag_number,
                                             &len_value_type);
             len += tag_len;
             if (tag_number != BACNET_APPLICATION_TAG_SIGNED_INT)
@@ -298,11 +354,13 @@ int arf_ack_decode_service_request(
                 return -1;
             }
             len +=
-                decode_signed(&apdu[len], len_value_type,
+                decode_signed(&apdu[len], 
+							  len_value_type,
                               &data->type.stream.fileStartPosition);
             /* fileData */
             tag_len =
-                decode_tag_number_and_value(&apdu[len], &tag_number,
+                decode_tag_number_and_value(&apdu[len], 
+											&tag_number,
                                             &len_value_type);
             len += tag_len;
             if (tag_number != BACNET_APPLICATION_TAG_OCTET_STRING)
@@ -310,7 +368,8 @@ int arf_ack_decode_service_request(
                 return -1;
             }
             decoded_len =
-                decode_octet_string(&apdu[len], len_value_type,
+                decode_octet_string(&apdu[len], 
+									len_value_type,
                                     &data->fileData);
             if ((uint32_t) decoded_len != len_value_type)
             {
@@ -321,17 +380,21 @@ int arf_ack_decode_service_request(
             {
                 return -1;
             }
+
             /* a tag number is not extended so only one octet */
             len++;
         }
         else if (decode_is_opening_tag_number(&apdu[len], 1))
         {
             data->access = FILE_RECORD_ACCESS;
+
             /* a tag number is not extended so only one octet */
             len++;
+
             /* fileStartRecord */
             tag_len =
-                decode_tag_number_and_value(&apdu[len], &tag_number,
+                decode_tag_number_and_value(&apdu[len], 
+											&tag_number,
                                             &len_value_type);
             len += tag_len;
             if (tag_number != BACNET_APPLICATION_TAG_SIGNED_INT)
@@ -339,11 +402,14 @@ int arf_ack_decode_service_request(
                 return -1;
             }
             len +=
-                decode_signed(&apdu[len], len_value_type,
+                decode_signed(&apdu[len], 
+							  len_value_type,
                               &data->type.record.fileStartRecord);
+
             /* returnedRecordCount */
             tag_len =
-                decode_tag_number_and_value(&apdu[len], &tag_number,
+                decode_tag_number_and_value(&apdu[len], 
+											&tag_number,
                                             &len_value_type);
             len += tag_len;
             if (tag_number != BACNET_APPLICATION_TAG_UNSIGNED_INT)
@@ -351,22 +417,29 @@ int arf_ack_decode_service_request(
                 return -1;
             }
             len +=
-                decode_unsigned(&apdu[len], len_value_type,
+                decode_unsigned(&apdu[len], 
+								len_value_type,
                                 &data->type.record.RecordCount);
+
             /* fileData */
             tag_len =
-                decode_tag_number_and_value(&apdu[len], &tag_number,
+                decode_tag_number_and_value(&apdu[len], 
+											&tag_number,
                                             &len_value_type);
             len += tag_len;
             if (tag_number != BACNET_APPLICATION_TAG_OCTET_STRING)
+			{
                 return -1;
+			}
             len +=
-                decode_octet_string(&apdu[len], len_value_type,
+                decode_octet_string(&apdu[len], 
+									len_value_type,
                                     &data->fileData);
             if (!decode_is_closing_tag_number(&apdu[len], 1))
             {
                 return -1;
             }
+
             /* a tag number is not extended so only one octet */
             len++;
         }
@@ -390,19 +463,29 @@ int arf_ack_decode_apdu(
     unsigned offset = 0;
 
     if (!apdu)
+	{
         return -1;
+	}
+
     /* optional checking - most likely was already done prior to this call */
     if (apdu[0] != PDU_TYPE_COMPLEX_ACK)
+	{
         return -1;
-    *invoke_id = apdu[1];       /* invoke id - filled in by net layer */
+	}
+
+	/* invoke id - filled in by net layer */
+    *invoke_id = apdu[1];       
     if (apdu[2] != SERVICE_CONFIRMED_ATOMIC_READ_FILE)
+	{
         return -1;
+	}
     offset = 3;
 
     if (apdu_len > offset)
     {
         len =
-            arf_ack_decode_service_request(&apdu[offset], apdu_len - offset,
+            arf_ack_decode_service_request(&apdu[offset], 
+										   apdu_len - offset,
                                            data);
     }
 
@@ -420,18 +503,23 @@ void testAtomicReadFileAckAccess(
     BACNET_ATOMIC_READ_FILE_DATA * data
 )
 {
-    BACNET_ATOMIC_READ_FILE_DATA test_data = { 0 };
-    uint8_t apdu[480] = { 0 };
-    int len = 0;
-    int apdu_len = 0;
-    uint8_t invoke_id = 128;
-    uint8_t test_invoke_id = 0;
+    int len									= 0;
+    int apdu_len							= 0;
+    uint8_t apdu[480]						= { 0 };
+    uint8_t invoke_id						= 128;
+    uint8_t test_invoke_id					= 0;
+    BACNET_ATOMIC_READ_FILE_DATA test_data	= { 0 };
 
-    len = arf_ack_encode_apdu(&apdu[0], invoke_id, data);
+    len = arf_ack_encode_apdu(&apdu[0], 
+							  invoke_id, 
+							  data);
     ct_test(pTest, len != 0);
     apdu_len = len;
 
-    len = arf_ack_decode_apdu(&apdu[0], apdu_len, &test_invoke_id, &test_data);
+    len = arf_ack_decode_apdu(&apdu[0], 
+							  apdu_len, 
+							  &test_invoke_id, 
+							  &test_data);
     ct_test(pTest, len != -1);
     ct_test(pTest, test_data.endOfFile == data->endOfFile);
     ct_test(pTest, test_data.access == data->access);
@@ -469,7 +557,8 @@ void testAtomicReadFileAck(
     data.endOfFile = true;
     data.access = FILE_STREAM_ACCESS;
     data.type.stream.fileStartPosition = 0;
-    octetstring_init(&data.fileData, test_octet_string,
+    octetstring_init(&data.fileData, 
+					 test_octet_string,
                      sizeof(test_octet_string));
     testAtomicReadFileAckAccess(pTest, &data);
 
@@ -477,7 +566,8 @@ void testAtomicReadFileAck(
     data.access = FILE_RECORD_ACCESS;
     data.type.record.fileStartRecord = 1;
     data.type.record.RecordCount = 2;
-    octetstring_init(&data.fileData, test_octet_string,
+    octetstring_init(&data.fileData, 
+					 test_octet_string,
                      sizeof(test_octet_string));
     testAtomicReadFileAckAccess(pTest, &data);
 
@@ -531,18 +621,18 @@ void testAtomicReadFile(
 {
     BACNET_ATOMIC_READ_FILE_DATA data = { 0 };
 
-    data.object_type = OBJECT_FILE;
-    data.object_instance = 1;
-    data.access = FILE_STREAM_ACCESS;
-    data.type.stream.fileStartPosition = 0;
-    data.type.stream.requestedOctetCount = 128;
+    data.object_type						= OBJECT_FILE;
+    data.object_instance					= 1;
+    data.access								= FILE_STREAM_ACCESS;
+    data.type.stream.fileStartPosition		= 0;
+    data.type.stream.requestedOctetCount	= 128;
     testAtomicReadFileAccess(pTest, &data);
 
-    data.object_type = OBJECT_FILE;
-    data.object_instance = 2;
-    data.access = FILE_RECORD_ACCESS;
-    data.type.record.fileStartRecord = 1;
-    data.type.record.RecordCount = 2;
+    data.object_type						= OBJECT_FILE;
+    data.object_instance					= 2;
+    data.access								= FILE_RECORD_ACCESS;
+    data.type.record.fileStartRecord		= 1;
+    data.type.record.RecordCount			= 2;
     testAtomicReadFileAccess(pTest, &data);
 
     return;

@@ -89,8 +89,8 @@ void MyAbortHandler(
 )
 {
     (void) server;
-    if (address_match(&Target_Address, src) &&
-            (invoke_id == Current_Invoke_ID))
+    if (address_match(&Target_Address, src) 
+	&& (invoke_id == Current_Invoke_ID))
     {
         printf("BACnet Abort: %s\r\n",
                bactext_abort_reason_name((int) abort_reason));
@@ -104,8 +104,8 @@ void MyRejectHandler(
     uint8_t reject_reason
 )
 {
-    if (address_match(&Target_Address, src) &&
-            (invoke_id == Current_Invoke_ID))
+    if (address_match(&Target_Address, src) 
+	&& (invoke_id == Current_Invoke_ID))
     {
         printf("BACnet Reject: %s\r\n",
                bactext_reject_reason_name((int) reject_reason));

@@ -138,17 +138,24 @@ struct BACnet_Device_Address
 {
     /* mac_len = 0 is a broadcast address */
     uint8_t mac_len;
+
     /* note: MAC for IP addresses uses 4 bytes for addr, 2 bytes for port */
     /* use de/encode_unsigned32/16 for re/storing the IP address */
     uint8_t mac[MAX_MAC_LEN];
+
     /* DNET,DLEN,DADR or SNET,SLEN,SADR */
     /* the following are used if the device is behind a router */
     /* net = 0 indicates local */
-    uint16_t net;       /* BACnet network number */
+	/* BACnet network number */
+    uint16_t net;
+
     /* LEN = 0 denotes broadcast MAC ADR and ADR field is absent */
     /* LEN > 0 specifies length of ADR field */
-    uint8_t len;        /* length of MAC address */
-    uint8_t adr[MAX_MAC_LEN];   /* hwaddr (MAC) address */
+	/* length of MAC address */
+    uint8_t len;
+
+	/* hwaddr (MAC) address */
+    uint8_t adr[MAX_MAC_LEN];
 };
 typedef struct BACnet_Device_Address BACNET_ADDRESS;
 
@@ -161,16 +168,56 @@ typedef struct BACnet_Object_Id
     uint32_t instance;
 } BACNET_OBJECT_ID;
 
+/*
+ * NPDU
+ * {
+ *	   Version[1]
+ *	   Control[1]
+ *	   Dnet[2]
+ *	   Dlen[1]
+ *	   Dadr[MAX_MAC_LEN]
+ *	   Snet[2]
+ *	   Slen[1]
+ *	   Sadr[MAX_MAC_LEN]
+ *	   HopCount[1]
+ *	   MessageType[1]
+ *	   VenderID[2]
+ * }
+ * /
 #define MAX_NPDU (1+1+2+1+MAX_MAC_LEN+2+1+MAX_MAC_LEN+1+1+2)
+
 #define MAX_PDU (MAX_APDU + MAX_NPDU)
 
-#define BACNET_ID_VALUE(bacnet_object_instance, bacnet_object_type) ((((bacnet_object_type) & BACNET_MAX_OBJECT) << BACNET_INSTANCE_BITS) | ((bacnet_object_instance) & BACNET_MAX_INSTANCE))
-#define BACNET_INSTANCE(bacnet_object_id_num) ((bacnet_object_id_num)&BACNET_MAX_INSTANCE)
-#define BACNET_TYPE(bacnet_object_id_num) (((bacnet_object_id_num) >> BACNET_INSTANCE_BITS ) & BACNET_MAX_OBJECT)
+#define BACNET_ID_VALUE( bacnet_object_instance, bacnet_object_type ) \
+(\
+	(\
+		((bacnet_object_type) & BACNET_MAX_OBJECT) << BACNET_INSTANCE_BITS
+	)\
+   	|\
+	(\
+		(bacnet_object_instance) & BACNET_MAX_INSTANCE\
+	)\
+)
 
-#define BACNET_STATUS_OK (0)
-#define BACNET_STATUS_ERROR (-1)
-#define BACNET_STATUS_ABORT (-2)
-#define BACNET_STATUS_REJECT (-3)
+#define BACNET_INSTANCE( bacnet_object_id_num ) \
+(\
+	(bacnet_object_id_num) & BACNET_MAX_INSTANCE\
+)
+
+#define BACNET_TYPE( bacnet_object_id_num ) \
+(\
+	(\
+		(bacnet_object_id_num) >> BACNET_INSTANCE_BITS \
+	)\
+   	&\
+	(\
+		BACNET_MAX_OBJECT\
+	)\
+)
+
+#define BACNET_STATUS_OK		(0)
+#define BACNET_STATUS_ERROR		(-1)
+#define BACNET_STATUS_ABORT		(-2)
+#define BACNET_STATUS_REJECT	(-3)
 
 #endif

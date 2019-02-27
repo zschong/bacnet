@@ -23,13 +23,13 @@ typedef void (
 
 struct _Test
 {
-    char *name;
-    FILE *pStream;
-    size_t nTests;
-    size_t maxTests;
-    TestFunc *pTestFuns;
-    long nPass;
-    long nFail;
+    char *		name;
+    FILE *		pStream;
+    size_t		nTests;
+    size_t		maxTests;
+    TestFunc *	pTestFuns;
+    long		nPass;
+    long		nFail;
 };
 
 #ifdef __cplusplus

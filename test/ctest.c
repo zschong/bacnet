@@ -118,8 +118,11 @@ long ct_report(
     assert(pTest);
     if (pTest->pStream)
     {
-        fprintf(pTest->pStream, "Test \"%s\":\n\tPassed: %ld\n\tFailed: %ld\n",
-                pTest->name, pTest->nPass, pTest->nFail);
+        fprintf(pTest->pStream, 
+				"Test \"%s\":\n\tPassed: %ld\n\tFailed: %ld\n",
+                pTest->name, 
+				pTest->nPass, 
+				pTest->nFail);
     }
     return pTest->nFail;
 }
@@ -187,7 +190,9 @@ long ct_run(
     size_t testNum;
     assert(pTest);
     for (testNum = 0; testNum < pTest->nTests; ++testNum)
+	{
         pTest->pTestFuns[testNum] (pTest);
+	}
     return pTest->nFail;
 }
 
