@@ -259,12 +259,14 @@ int main(
     if (by_name)
     {
         Send_WhoHas_Name(Target_Object_Instance_Min,
-                         Target_Object_Instance_Max, Target_Object_Name);
+                         Target_Object_Instance_Max, 
+						 Target_Object_Name);
     }
     else
     {
         Send_WhoHas_Object(Target_Object_Instance_Min,
-                           Target_Object_Instance_Max, Target_Object_Type,
+                           Target_Object_Instance_Max, 
+						   Target_Object_Type,
                            Target_Object_Instance);
     }
     /* loop forever */

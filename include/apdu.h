@@ -194,12 +194,12 @@ void apdu_set_reject_handler(
 );
 
 uint16_t apdu_decode_confirmed_service_request(
-    uint8_t * apdu, /* APDU data */
-    uint16_t apdu_len,
-    BACNET_CONFIRMED_SERVICE_DATA * service_data,
-    uint8_t * service_choice,
-    uint8_t ** service_request,
-    uint16_t * service_request_len
+    uint8_t *						apdu, /* APDU data */
+    uint16_t						apdu_len,
+    BACNET_CONFIRMED_SERVICE_DATA*	service_data,
+    uint8_t *						service_choice,
+    uint8_t **						service_request,
+    uint16_t *						service_request_len
 );
 
 uint16_t apdu_timeout(

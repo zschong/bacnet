@@ -48,19 +48,20 @@
  * @param src [in] The BACNET_ADDRESS of the message's source (ignored).
  */
 void handler_who_is(
-    uint8_t * service_request,
-    uint16_t service_len,
-    BACNET_ADDRESS * src
+    uint8_t *		service_request,
+    uint16_t		service_len,
+    BACNET_ADDRESS* src
 )
 {
-    int len = 0;
-    int32_t low_limit = 0;
-    int32_t high_limit = 0;
+    int		len			= 0;
+    int32_t low_limit	= 0;
+    int32_t high_limit	= 0;
 
     (void) src;
-    len =
-        whois_decode_service_request(service_request, service_len, &low_limit,
-                                     &high_limit);
+    len = whois_decode_service_request(service_request, 
+									   service_len, 
+									   &low_limit,
+									   &high_limit);
     if (len == 0)
     {
         Send_I_Am(&Handler_Transmit_Buffer[0]);
@@ -68,8 +69,8 @@ void handler_who_is(
     else if (len != BACNET_STATUS_ERROR)
     {
         /* is my device id within the limits? */
-        if ((Device_Object_Instance_Number() >= (uint32_t) low_limit) &&
-                (Device_Object_Instance_Number() <= (uint32_t) high_limit))
+        if ((Device_Object_Instance_Number() >= (uint32_t) low_limit) 
+		&&	(Device_Object_Instance_Number() <= (uint32_t) high_limit))
         {
             Send_I_Am(&Handler_Transmit_Buffer[0]);
         }
@@ -86,18 +87,20 @@ void handler_who_is(
  *                 response will be sent back to.
  */
 void handler_who_is_unicast(
-    uint8_t * service_request,
-    uint16_t service_len,
-    BACNET_ADDRESS * src
+    uint8_t *			service_request,
+    uint16_t			service_len,
+    BACNET_ADDRESS *	src
 )
 {
     int len = 0;
     int32_t low_limit = 0;
     int32_t high_limit = 0;
 
-    len =
-        whois_decode_service_request(service_request, service_len, &low_limit,
-                                     &high_limit);
+    len = whois_decode_service_request(service_request, 
+									   service_len, 
+									   &low_limit, 
+									   &high_limit);
+
     /* If no limits, then always respond */
     if (len == 0)
     {
@@ -106,8 +109,8 @@ void handler_who_is_unicast(
     else if (len != BACNET_STATUS_ERROR)
     {
         /* is my device id within the limits? */
-        if ((Device_Object_Instance_Number() >= (uint32_t) low_limit) &&
-                (Device_Object_Instance_Number() <= (uint32_t) high_limit))
+        if ((Device_Object_Instance_Number() >= (uint32_t) low_limit) 
+		&&	(Device_Object_Instance_Number() <= (uint32_t) high_limit))
         {
             Send_I_Am_Unicast(&Handler_Transmit_Buffer[0], src);
         }
@@ -129,23 +132,24 @@ void handler_who_is_unicast(
  * 			back to the src, else False if should broadcast response(s).
  */
 static void check_who_is_for_routing(
-    uint8_t * service_request,
-    uint16_t service_len,
-    BACNET_ADDRESS * src,
-    bool is_unicast
+    uint8_t *		service_request,
+    uint16_t		service_len,
+    BACNET_ADDRESS* src,
+    bool			is_unicast
 )
 {
-    int len = 0;
-    int32_t low_limit = 0;
-    int32_t high_limit = 0;
-    int32_t dev_instance;
-    int cursor = 0;     /* Starting hint */
-    int my_list[2] = { 0, -1 }; /* Not really used, so dummy values */
-    BACNET_ADDRESS bcast_net;
+    int				len				= 0;
+    int32_t			low_limit		= 0;
+    int32_t			high_limit		= 0;
+    int32_t			dev_instance	= 0;
+    int				cursor			= 0;			/* Starting hint */
+    int				my_list[2]		= { 0, -1 };	/* Not really used, so dummy values */
+    BACNET_ADDRESS	bcast_net;
 
-    len =
-        whois_decode_service_request(service_request, service_len, &low_limit,
-                                     &high_limit);
+    len = whois_decode_service_request(service_request, 
+									   service_len, 
+									   &low_limit,
+									   &high_limit);
     if (len == BACNET_STATUS_ERROR)
     {
         /* Invalid; just leave */
@@ -159,13 +163,18 @@ static void check_who_is_for_routing(
     {
         dev_instance = Device_Object_Instance_Number();
         /* If len == 0, no limits and always respond */
-        if ((len == 0) || ((dev_instance >= low_limit) &&
-                           (dev_instance <= high_limit)))
+        if ((len == 0) 
+		|| ((dev_instance >= low_limit) 
+		&& (dev_instance <= high_limit)))
         {
             if (is_unicast)
+			{
                 Send_I_Am_Unicast(&Handler_Transmit_Buffer[0], src);
+			}
             else
+			{
                 Send_I_Am(&Handler_Transmit_Buffer[0]);
+			}
         }
     }
 
@@ -184,9 +193,9 @@ static void check_who_is_for_routing(
  * @param src [in] The BACNET_ADDRESS of the message's source (ignored).
  */
 void handler_who_is_bcast_for_routing(
-    uint8_t * service_request,
-    uint16_t service_len,
-    BACNET_ADDRESS * src
+    uint8_t *		service_request,
+    uint16_t		service_len,
+    BACNET_ADDRESS* src
 )
 {
     check_who_is_for_routing(service_request, service_len, src, false);
@@ -205,11 +214,14 @@ void handler_who_is_bcast_for_routing(
  *                 response will be sent back to.
  */
 void handler_who_is_unicast_for_routing(
-    uint8_t * service_request,
-    uint16_t service_len,
-    BACNET_ADDRESS * src
+    uint8_t *			service_request,
+    uint16_t			service_len,
+    BACNET_ADDRESS *	src
 )
 {
-    check_who_is_for_routing(service_request, service_len, src, true);
+    check_who_is_for_routing(service_request, 
+							 service_len, 
+							 src, 
+							 true);
 }
 #endif /* BAC_ROUTING */

@@ -183,7 +183,7 @@ typedef struct BACnet_Object_Id
  *	   MessageType[1]
  *	   VenderID[2]
  * }
- * /
+ */
 #define MAX_NPDU (1+1+2+1+MAX_MAC_LEN+2+1+MAX_MAC_LEN+1+1+2)
 
 #define MAX_PDU (MAX_APDU + MAX_NPDU)
@@ -191,7 +191,7 @@ typedef struct BACnet_Object_Id
 #define BACNET_ID_VALUE( bacnet_object_instance, bacnet_object_type ) \
 (\
 	(\
-		((bacnet_object_type) & BACNET_MAX_OBJECT) << BACNET_INSTANCE_BITS
+		((bacnet_object_type) & BACNET_MAX_OBJECT) << BACNET_INSTANCE_BITS\
 	)\
    	|\
 	(\

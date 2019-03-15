@@ -331,13 +331,27 @@ void dlenv_init(
     pEnv = getenv("BACNET_BIP6_BROADCAST");
     if (pEnv)
     {
-        bvlc6_address_set(&addr, (uint16_t) strtol(pEnv, NULL, 0), 0, 0, 0, 0,
-                          0, 0, BIP6_MULTICAST_GROUP_ID);
+        bvlc6_address_set(&addr, 
+						  (uint16_t) strtol(pEnv, NULL, 0), 
+						  0, 
+						  0, 
+						  0, 
+						  0,
+                          0, 
+						  0, 
+						  BIP6_MULTICAST_GROUP_ID);
         bip6_set_broadcast_addr(&addr);
     }
     else
     {
-        bvlc6_address_set(&addr, BIP6_MULTICAST_SITE_LOCAL, 0, 0, 0, 0, 0, 0,
+        bvlc6_address_set(&addr, 
+						  BIP6_MULTICAST_SITE_LOCAL, 
+						  0, 
+						  0, 
+						  0, 
+						  0, 
+						  0, 
+						  0,
                           BIP6_MULTICAST_GROUP_ID);
         bip6_set_broadcast_addr(&addr);
     }

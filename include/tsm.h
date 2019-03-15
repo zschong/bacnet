@@ -51,6 +51,7 @@ typedef struct BACnet_TSM_Data
 {
     /* used to count APDU retries */
     uint8_t RetryCount;
+
     /* used to count segment retries */
     /*uint8_t SegmentRetryCount;  */
     /* used to control APDU retries and the acceptance of server replies */
@@ -69,14 +70,19 @@ typedef struct BACnet_TSM_Data
     /* used to perform timeout on Confirmed Requests */
     /* in milliseconds */
     uint16_t RequestTimer;
+
     /* unique id */
     uint8_t InvokeID;
+
     /* state that the TSM is in */
     BACNET_TSM_STATE state;
+
     /* the address we sent it to */
     BACNET_ADDRESS dest;
+
     /* the network layer info */
     BACNET_NPDU_DATA npdu_data;
+
     /* copy of the APDU, should we need to send it again */
     uint8_t apdu[MAX_PDU];
     unsigned apdu_len;

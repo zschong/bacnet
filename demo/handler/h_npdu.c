@@ -64,9 +64,9 @@
  *  @param pdu_len [in] The size of the received message in the pdu[] buffer.
  */
 void npdu_handler(
-    BACNET_ADDRESS * src,       /* source address */
-    uint8_t * pdu,      /* PDU data */
-    uint16_t pdu_len
+    BACNET_ADDRESS *	src,	/* source address */
+    uint8_t *			pdu,	/* PDU data */
+    uint16_t			pdu_len
 )
 {
     /* length PDU  */
@@ -77,7 +77,10 @@ void npdu_handler(
     /* only handle the version that we know how to handle */
     if (pdu[0] == BACNET_PROTOCOL_VERSION)
     {
-        apdu_offset = npdu_decode(&pdu[0], &dest, src, &npdu_data);
+        apdu_offset = npdu_decode(&pdu[0], 
+								  &dest, 
+								  src, 
+								  &npdu_data);
         if (npdu_data.network_layer_message)
         {
             /*FIXME: network layer message received!  Handle it! */
@@ -92,9 +95,8 @@ void npdu_handler(
                 /* only handle the version that we know how to handle */
                 /* and we are not a router, so ignore messages with
                    routing information cause they are not for us */
-                if ((dest.net == BACNET_BROADCAST_NETWORK) &&
-                        ((pdu[apdu_offset] & 0xF0) ==
-                         PDU_TYPE_CONFIRMED_SERVICE_REQUEST))
+                if ((dest.net == BACNET_BROADCAST_NETWORK) 
+				&&	((pdu[apdu_offset] & 0xF0) == PDU_TYPE_CONFIRMED_SERVICE_REQUEST))
                 {
                     /* hack for 5.4.5.1 - IDLE */
                     /* ConfirmedBroadcastReceived */
@@ -102,7 +104,8 @@ void npdu_handler(
                 }
                 else
                 {
-                    apdu_handler(src, &pdu[apdu_offset],
+                    apdu_handler(src, 
+								 &pdu[apdu_offset],
                                  (uint16_t) (pdu_len - apdu_offset));
                 }
             }

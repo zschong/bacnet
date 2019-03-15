@@ -79,54 +79,71 @@ static void Init_Service_Handlers(
 )
 {
     Device_Init(NULL);
+
     /* we need to handle who-is to support dynamic device binding */
     apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_WHO_IS, handler_who_is);
     apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_WHO_HAS, handler_who_has);
+
     /* handle i-am to support binding to other devices */
     apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_I_AM, handler_i_am_bind);
+
     /* set the handler for all the services we don't implement */
     /* It is required to send the proper reject message... */
-    apdu_set_unrecognized_service_handler_handler
-    (handler_unrecognized_service);
+    apdu_set_unrecognized_service_handler_handler(handler_unrecognized_service);
+
     /* Set the handlers for any confirmed services that we support. */
     /* We must implement read property - it's required! */
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_READ_PROPERTY,
                                handler_read_property);
+
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_READ_PROP_MULTIPLE,
                                handler_read_property_multiple);
+
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_WRITE_PROPERTY,
                                handler_write_property);
+
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_WRITE_PROP_MULTIPLE,
                                handler_write_property_multiple);
+
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_READ_RANGE,
                                handler_read_range);
 #if defined(BACFILE)
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_ATOMIC_READ_FILE,
                                handler_atomic_read_file);
+
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_ATOMIC_WRITE_FILE,
                                handler_atomic_write_file);
 #endif
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_REINITIALIZE_DEVICE,
                                handler_reinitialize_device);
+
     apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_UTC_TIME_SYNCHRONIZATION,
                                  handler_timesync_utc);
+
     apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_TIME_SYNCHRONIZATION,
                                  handler_timesync);
+
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_SUBSCRIBE_COV,
                                handler_cov_subscribe);
+
     apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_COV_NOTIFICATION,
                                  handler_ucov_notification);
+
     /* handle communication so we can shutup when asked */
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_DEVICE_COMMUNICATION_CONTROL,
                                handler_device_communication_control);
+
     /* handle the data coming back from private requests */
     apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_PRIVATE_TRANSFER,
                                  handler_unconfirmed_private_transfer);
+
 #if defined(INTRINSIC_REPORTING)
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_ACKNOWLEDGE_ALARM,
                                handler_alarm_ack);
+
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_GET_EVENT_INFORMATION,
                                handler_get_event_information);
+
     apdu_set_confirmed_handler(SERVICE_CONFIRMED_GET_ALARM_SUMMARY,
                                handler_get_alarm_summary);
 #endif /* defined(INTRINSIC_REPORTING) */

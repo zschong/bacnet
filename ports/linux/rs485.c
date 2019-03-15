@@ -233,6 +233,7 @@ uint32_t RS485_Get_Port_Baud_Rate(
 )
 {
     uint32_t baud = 0;
+
     SHARED_MSTP_DATA *poSharedData = (SHARED_MSTP_DATA *) mstp_port->UserData;
     if (!poSharedData)
     {
@@ -572,7 +573,10 @@ void RS485_Check_UART_Data(
         /* grab bytes and stuff them into the FIFO every time */
         FD_ZERO(&input);
         FD_SET(poSharedData->RS485_Handle, &input);
-        n = select(poSharedData->RS485_Handle + 1, &input, NULL, NULL,
+        n = select(poSharedData->RS485_Handle + 1, 
+				   &input, 
+				   NULL, 
+				   NULL,
                    &waiter);
         if (n < 0)
         {
@@ -601,11 +605,12 @@ void RS485_Initialize(
     void
 )
 {
-    struct termios newtio;
-    struct serial_struct newserial;
-    float baud_error = 0.0;
+    struct termios			newtio;
+    struct serial_struct	newserial;
+    float					baud_error = 0.0;
 
     printf("RS485: Initializing %s", RS485_Port_Name);
+
     /*
        Open device for reading and writing.
        Blocking mode - more CPU effecient
@@ -623,12 +628,16 @@ void RS485_Initialize(
     /* efficient blocking for the read */
     fcntl(RS485_Handle, F_SETFL, 0);
 #endif
+
     /* save current serial port settings */
     tcgetattr(RS485_Handle, &RS485_oldtio);
+
     /* we read the old serial setup */
     ioctl(RS485_Handle, TIOCGSERIAL, &RS485_oldserial);
+
     /* we need a copy of existing settings */
     memcpy(&newserial, &RS485_oldserial, sizeof(struct serial_struct));
+
     /* clear struct for new port settings */
     bzero(&newtio, sizeof(newtio));
     /*
@@ -640,12 +649,16 @@ void RS485_Initialize(
        CREAD   : enable receiving characters
      */
     newtio.c_cflag = RS485_Baud | CS8 | CLOCAL | CREAD | RS485MOD;
+
     /* Raw input */
     newtio.c_iflag = 0;
+
     /* Raw output */
     newtio.c_oflag = 0;
+
     /* no processing */
     newtio.c_lflag = 0;
+
     /* activate the settings for the port after flushing I/O */
     tcsetattr(RS485_Handle, TCSAFLUSH, &newtio);
     if (RS485_SpecBaud)
@@ -654,6 +667,7 @@ void RS485_Initialize(
         newserial.flags |= ASYNC_SPD_CUST;
         newserial.custom_divisor =
             round(((float) newserial.baud_base) / 76800);
+
         /* we must check that we calculated some sane value;
            small baud bases yield bad custom divisor values */
         baud_error =
@@ -671,11 +685,14 @@ void RS485_Initialize(
         ioctl(RS485_Handle, TIOCSSERIAL, &newserial);
     }
     printf(" at Baud Rate %u", RS485_Get_Baud_Rate());
+
     /* destructor */
     atexit(RS485_Cleanup);
+
     /* flush any data waiting */
     usleep(200000);
     tcflush(RS485_Handle, TCIOFLUSH);
+
     /* ringbuffer */
     FIFO_Init(&Rx_FIFO, Rx_Buffer, sizeof(Rx_Buffer));
     printf("=success!\n");
@@ -707,17 +724,25 @@ void RS485_Print_Ports(
     {
         while (n--)
         {
-            if (strcmp(namelist[n]->d_name, "..") &&
-                    strcmp(namelist[n]->d_name, "."))
+            if (strcmp(namelist[n]->d_name, "..") 
+			&&	strcmp(namelist[n]->d_name, "."))
             {
-                snprintf(device_dir, sizeof(device_dir), "%s%s/device", sysdir,
+                snprintf(device_dir, 
+						 sizeof(device_dir), 
+						 "%s%s/device", 
+						 sysdir,
                          namelist[n]->d_name);
+
                 // Stat the devicedir and handle it if it is a symlink
                 if (lstat(device_dir, &st) == 0 && S_ISLNK(st.st_mode))
                 {
                     memset(buffer, 0, sizeof(buffer));
-                    snprintf(device_dir, sizeof(device_dir),
-                             "%s%s/device/driver", sysdir, namelist[n]->d_name);
+                    snprintf(device_dir, 
+							 sizeof(device_dir),
+                             "%s%s/device/driver", 
+							 sysdir, 
+							 namelist[n]->d_name);
+
                     if (readlink(device_dir, buffer, sizeof(buffer)) > 0)
                     {
                         valid_port = false;
@@ -725,8 +750,11 @@ void RS485_Print_Ports(
                         if (strcmp(driver_name, "serial8250") == 0)
                         {
                             // serial8250-devices must be probed
-                            snprintf(device_dir, sizeof(device_dir), "/dev/%s",
+                            snprintf(device_dir, 
+									 sizeof(device_dir), 
+									 "/dev/%s",
                                      namelist[n]->d_name);
+
                             fd = open(device_dir,
                                       O_RDWR | O_NONBLOCK | O_NOCTTY);
                             if (fd >= 0)
@@ -753,7 +781,8 @@ void RS485_Print_Ports(
                             // print full absolute file path
                             printf("interface {value=/dev/%s}"
                                    "{display=MS/TP Capture on /dev/%s}\n",
-                                   namelist[n]->d_name, namelist[n]->d_name);
+                                   namelist[n]->d_name, 
+								   namelist[n]->d_name);
                         }
                     }
                 }
